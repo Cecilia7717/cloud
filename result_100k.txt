@@ -1,0 +1,160 @@
+/usr/local/lib/python3.10/dist-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+2025-05-23 17:17:34,975 ignite.distributed.launcher.Parallel INFO: - Run '<function training at 0x7f271a4eef80>' in 1 processes
+2025-05-23 17:17:34,976 ALCD_CLOUD INFO: Train ags_tiny_unet_100k on CIFAR10
+2025-05-23 17:17:34,976 ALCD_CLOUD INFO: - PyTorch version: 2.4.1+cu121
+2025-05-23 17:17:34,976 ALCD_CLOUD INFO: - Ignite version: 0.5.1
+2025-05-23 17:17:35,073 ALCD_CLOUD INFO: - GPU Device: NVIDIA A100 80GB PCIe
+2025-05-23 17:17:35,073 ALCD_CLOUD INFO: - CUDA version: 12.1
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: - CUDNN version: 90100
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 
+
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: Configuration:
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	seed: 12345
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	data_path: ./DATA/
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	csv_paths: {'train': 'DATA/train.csv', 'test': 'DATA/valid.csv'}
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	output_path: ./output-alcd-cloud-self/
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	input_size: (512, 512)
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	img_mean: [0.0, 0.0, 0.0]
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	img_rescale: [8657.0, 8657.0, 8657.0]
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	model: ags_tiny_unet_100k
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	quant_config: None
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	class_weights: [0.1, 0.9]
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	batch_size: 28
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	weight_decay: 0.0002
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	num_workers: 8
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	num_epochs: 1000
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	learning_rate: 0.001
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	num_warmup_epochs: 5
+2025-05-23 17:17:35,074 ALCD_CLOUD INFO: 	validate_every: 3
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	checkpoint_every: 1000
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	backend: None
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	resume_from: None
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	log_every_iters: 5
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	nproc_per_node: None
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	stop_iteration: None
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 	with_amp: False
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: 
+
+2025-05-23 17:17:35,075 ALCD_CLOUD INFO: Output path: output-alcd-cloud-self/ags_tiny_unet_100k_backend-None-1_20250523-171735
+2025-05-23 17:17:35,104 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 28, 'num_workers': 8, 'shuffle': True, 'drop_last': True, 'pin_memory': True}
+2025-05-23 17:17:35,104 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
+2025-05-23 17:17:35,644 ALCD_CLOUD INFO: Engine run starting with max_epochs=1000.
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/usr/local/lib/python3.10/dist-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+2025-05-23 17:17:39,052 ALCD_CLOUD ERROR: Current run is terminating due to exception: CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 413.19 MiB is free. Process 3102472 has 71.58 GiB memory in use. Process 3801238 has 7.25 GiB memory in use. Of the allocated memory 6.73 GiB is allocated by PyTorch, and 27.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-23 17:17:39,098 ALCD_CLOUD ERROR: Engine run is terminating due to exception: CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 413.19 MiB is free. Process 3102472 has 71.58 GiB memory in use. Process 3801238 has 7.25 GiB memory in use. Of the allocated memory 6.73 GiB is allocated by PyTorch, and 27.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-23 17:17:39,098 ALCD_CLOUD ERROR: 
+Traceback (most recent call last):
+  File "/workspace/./SCRIPTS/train.py", line 173, in training
+    trainer.run(train_loader, max_epochs=config["num_epochs"])
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 889, in run
+    return self._internal_run()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 932, in _internal_run
+    return next(self._internal_run_generator)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 990, in _internal_run_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 644, in _handle_exception
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 956, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1096, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 644, in _handle_exception
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1077, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/workspace/./SCRIPTS/train.py", line 392, in train_step
+    y_pred = model(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 738, in call_wrapped
+    return self._wrapped_call(self, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 316, in __call__
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 303, in __call__
+    return super(self.cls, obj).__call__(*args, **kwargs)  # type: ignore[misc]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "<eval_with_key>.0", line 17, in forward
+    encoder_encoder_blocks_1_encoder_block_5_leaky_relu = getattr(self, "encoder/encoder_blocks/1/encoder_block/5/LeakyRelu")(encoder_encoder_blocks_1_encoder_block_3_pointwise_conv);  encoder_encoder_blocks_1_encoder_block_3_pointwise_conv = None
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/activation.py", line 799, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 1677, in leaky_relu
+    result = torch._C._nn.leaky_relu(input, negative_slope)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 413.19 MiB is free. Process 3102472 has 71.58 GiB memory in use. Process 3801238 has 7.25 GiB memory in use. Of the allocated memory 6.73 GiB is allocated by PyTorch, and 27.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/workspace/./SCRIPTS/train.py", line 487, in <module>
+    fire.Fire({"run": run})
+  File "/usr/local/lib/python3.10/dist-packages/fire/core.py", line 135, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/usr/local/lib/python3.10/dist-packages/fire/core.py", line 468, in _Fire
+    component, remaining_args = _CallAndUpdateTrace(
+  File "/usr/local/lib/python3.10/dist-packages/fire/core.py", line 684, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "/workspace/./SCRIPTS/train.py", line 260, in run
+    parallel.run(training, config)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/distributed/launcher.py", line 316, in run
+    func(local_rank, *args, **kwargs)
+  File "/workspace/./SCRIPTS/train.py", line 176, in training
+    raise e
+  File "/workspace/./SCRIPTS/train.py", line 173, in training
+    trainer.run(train_loader, max_epochs=config["num_epochs"])
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 889, in run
+    return self._internal_run()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 932, in _internal_run
+    return next(self._internal_run_generator)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 990, in _internal_run_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 644, in _handle_exception
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 956, in _internal_run_as_gen
+    epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1096, in _run_once_on_dataset_as_gen
+    self._handle_exception(e)
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 644, in _handle_exception
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/ignite/engine/engine.py", line 1077, in _run_once_on_dataset_as_gen
+    self.state.output = self._process_function(self, self.state.batch)
+  File "/workspace/./SCRIPTS/train.py", line 392, in train_step
+    y_pred = model(x)
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 738, in call_wrapped
+    return self._wrapped_call(self, *args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 316, in __call__
+    raise e
+  File "/usr/local/lib/python3.10/dist-packages/torch/fx/graph_module.py", line 303, in __call__
+    return super(self.cls, obj).__call__(*args, **kwargs)  # type: ignore[misc]
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "<eval_with_key>.0", line 17, in forward
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/modules/activation.py", line 799, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+  File "/usr/local/lib/python3.10/dist-packages/torch/nn/functional.py", line 1677, in leaky_relu
+    result = torch._C._nn.leaky_relu(input, negative_slope)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 413.19 MiB is free. Process 3102472 has 71.58 GiB memory in use. Process 3801238 has 7.25 GiB memory in use. Of the allocated memory 6.73 GiB is allocated by PyTorch, and 27.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
