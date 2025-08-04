@@ -22,9 +22,6 @@ build:
 bash: build
 	docker run  -it --network=host \
 				--shm-size=40gb \
-				--gpus all \
-				-e NVIDIA_VISIBLE_DEVICES=5 \
-				-e CUDA_VISIBLE_DEVICES=5 \
 				-e LOCAL_USER=$(USER) -e LOCAL_GID=$(GID) -e LOCAL_UID=$(UID) \
 				-v ${NAS}:/nas \
 			   	-v "$(HERE):/workspace" \

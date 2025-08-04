@@ -26,7 +26,7 @@ from ignite.handlers import (
 from ignite.utils import manual_seed, setup_logger
 from torch import nn
 from torch.amp import autocast
-from torch.cuda.amp import GradScaler
+from torch.amp import GradScaler
 from utils.quant_utils.save_handler_qonnx import CheckpointQONNX, DiskSaverQONNX
 from utils.loss import TrainingLoss
 from torchvision import tv_tensors
@@ -181,22 +181,22 @@ def training(local_rank, config):
 
 def run(
     seed: int = 12345,
-    data_path: str = "pvc/",
+    data_path: str = "/data",
     csv_paths: dict = {
-        "train": "/pvc/train.csv",
-        "test": "/pvc/valid.csv",
+        "train": "/data/train.csv",
+        "test": "/data/valid.csv",
     },
-    output_path: str = "./output-alcd-cloud/",
+    output_path: str = "./output-alcd-cloud-quan/",
     input_size=(512, 512),
-    img_mean: List[float] = [0.0, 0, 0.0],
+    img_mean: List[float] = [0.0, 0.0, 0.0],
     img_rescale: List[float] = [8657.0, 8657.0, 8657.0],
     model: str = "ags_tiny_unet_100k",
-    quant_config: str = None,
+    quant_config: int = 8,# str="8bit_fix", # str = None,
     class_weights: List[float] = [0.1, 0.9],
     batch_size: int = 28,
     weight_decay: float = 2e-4,
     num_workers: int = 8,
-    num_epochs: int = 100, #1000
+    num_epochs: int = 1000,
     learning_rate: float = 1e-3,
     num_warmup_epochs: int = 5,
     validate_every: int = 3,
@@ -363,7 +363,7 @@ def create_trainer(
     #    - Two progress bars on epochs and optionally on iterations
 
     with_amp = config["with_amp"]
-    scaler = GradScaler(enabled=with_amp)
+    scaler = GradScaler('cuda',enabled=with_amp)
 
     def train_step(engine, batch):
         x, y = batch[0], batch[1]

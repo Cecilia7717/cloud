@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: interactive
+spec:
+  securityContext:
+    runAsUser: 0  # Run as root
+  containers:
+  - name: int-container
+    image: gitlab-registry.nrp-nautilus.io/prp/jupyter-stack/prp
+    command: ["sleep", "infinity"]
+    volumeMounts:
+    - mountPath: /data
+      name: examplevol
+    resources:
+      limits:
+        cpu: 1
+        memory: 48Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: 1
+        memory: 48Gi
+        nvidia.com/gpu: "1"
+  volumes:
+    - name: examplevol
+      persistentVolumeClaim:
+        claimName: pvc
+
+
+# https://drive.google.com/file/d/1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf/view?usp=sharing
+# https://drive.google.com/file/d/1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr/view?usp=sharing
+# https://drive.google.com/file/d/129zvA8cBOgaYKlLMksES9DluMHXYRmCM/view?usp=sharing
+# wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf'
+# wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr'
+# wget -O DOCKER.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=129zvA8cBOgaYKlLMksES9DluMHXYRmCM'
+
+# sudo apt update && sudo apt install docker.io
+# sudo systemctl enable --now docker
+# sudo usermod -aG docker $USER  # Add your user to the docker group
+# newgrp docker  # Apply group changes (or log out and back in)

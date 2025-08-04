@@ -12,7 +12,7 @@ from onnx2torch import convert
 from torch import nn
 from torchvision.transforms import v2 as T
 from utils.quant_utils.quantize import quant_model
-from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
+# from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
 
 def get_transform(
     mean: Sequence[float],
@@ -97,7 +97,8 @@ class ALCDDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx: int):
         row = self.csv.iloc[idx]
-
+        # print(row["in"])
+        # print(f"root_dir---{self.root_dir}")
         img_path = os.path.join(self.root_dir, row["in"])
         img = read_tiff(img_path)
 

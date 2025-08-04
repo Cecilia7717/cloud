@@ -1,0 +1,69 @@
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inter3090
+spec:
+  containers:
+  - name: int-container
+    image: gitlab-registry.nrp-nautilus.io/nrp/scientific-images/python
+    command: ["/bin/sh", "-c"]
+    args:
+    - >
+      wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf' &&
+      unzip MODEL.zip &&
+      wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr' &&
+      unzip SCRIPTS.zip &&
+      wget -O DOCKER.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=129zvA8cBOgaYKlLMksES9DluMHXYRmCM' &&
+      unzip DOCKER.zip &&
+      sleep 3600000
+    volumeMounts:
+    - mountPath: /pvc
+      name: pvc
+    - mountPath: /dev/shm  # Shared memory mount
+      name: dshm
+    resources:
+      limits:
+        cpu: 4
+        memory: 32Gi
+        nvidia.com/gpu: "1"
+        ephemeral-storage: 624Gi
+      requests:
+        cpu: 4
+        memory: 32Gi
+        nvidia.com/gpu: "1"
+        ephemeral-storage: 624Gi
+    securityContext:
+      capabilities:
+        add: ["IPC_LOCK"]  # Required for shared memory management
+  volumes:
+    - name: pvc
+      persistentVolumeClaim:
+        claimName: pvc
+    - name: dshm  # Shared memory volume
+      emptyDir:
+        medium: Memory
+        sizeLimit: 32Gi  # Adjust based on your needs (8GB shown)
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+
+
+
+# pip install --no-cache-dir \
+# pytorch-ignite==0.5.1 torch==2.4.1 torchvision==0.19.1 tensorboardX==2.6.2.2 tqdm==4.67.1 
+# pip install --no-cache-dir \
+# fire==0.7.0 pandas==2.2.3 rasterio==1.4.3 brevitas==0.11.0 onnx2torch==1.5.15 
+# conda install -y -c conda-forge \
+# onnxoptimizer==0.3.13 \
+# onnx==1.15.0 
+
+# fire==0.7.0
+# brevitas==0.11.0 \
+# python ./SCRIPTS/train.py run --model ags_tiny_unet_50k --data_path ./pvc >> txt  2>&1  

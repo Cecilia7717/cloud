@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: interactive
+spec:
+  containers:
+  - name: int-container
+    image: gitlab-registry.nrp-nautilus.io/prp/jupyter-stack/prp
+    command: ["sleep", "infinity"]
+    volumeMounts:
+    - mountPath: /examplevol # TODO: Put path to your volume here
+      name: examplevol # TODO: Put name of your volume here
+    resources:
+      limits:
+        cpu: 4
+        memory: 12Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: 4
+        memory: 12Gi
+        nvidia.com/gpu: "1"
+  volumes:
+    - name: examplevol # TODO: Put name of your volume here
+      persistentVolumeClaim:
+        claimName: examplevol # TODO: Put name of your volume here
+  affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: nvidia.com/gpu.product
+              operator: In
+              values:
+              - NVIDIA-GeForce-GTX-1080-Ti
+

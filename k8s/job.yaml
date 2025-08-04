@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: example-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: example-job
+        image: gitlab-registry.nrp-nautilus.io/prp/jupyter-stack/prp 
+        command: ["/bin/sh", "-c"]
+        args: ["python3 test.py"]
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            memory: 16Gi
+            cpu: 4
+          requests:
+            nvidia.com/gpu: 1
+            memory: 16Gi
+            cpu: 4
+        volumeMounts:
+        - mountPath: /examplevol
+          name: examplevol
+      volumes:
+        - name: examplevol
+          persistentVolumeClaim:
+            claimName: examplevol
+      restartPolicy: Never
+      affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: nvidia.com/gpu.product
+                    operator: In
+                    values:
+                    - NVIDIA-GeForce-GTX-1080-Ti
+  backoffLimit: 4
