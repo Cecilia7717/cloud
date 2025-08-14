@@ -59,11 +59,11 @@ def plot_f1_scores(epochs, f1_1, f_test_1):
         plt.xticks(rotation=45)
     
     plt.tight_layout()
-    plt.savefig('loss_plot.png', dpi=300, bbox_inches='tight')
+    plt.savefig('loss_plot_quan.png', dpi=300, bbox_inches='tight') # place to change the name of the output file
     plt.show()
 
 if __name__ == "__main__":
-    log_file = "4_08.txt"  # Change to your file path
+    log_file = "result_quan_1047.txt"  # Change to your file path
     epochs, f1_c1, f_test_1 = parse_f1_scores(log_file)
     
     if epochs:

@@ -78,6 +78,7 @@ class DecoderBlock(nn.Module):
 class UNetModel50K_quan(nn.Module):
     def __init__(self, bit=16):
         super().__init__()
+        self.input_quant = qnn.QuantIdentity(bit_width=bit)
         self.enc1 = EncoderBlock(3, 3, 16, 16, 16, in_maxpool=False, bit=bit)
         self.enc2 = EncoderBlock(16, 16, 32, 32, 32, bit=bit)
         self.enc3 = EncoderBlock(32, 32, 32, 32, 48, bit=bit)
@@ -136,25 +137,25 @@ class UNetModel100k_quan(nn.Module):
         return self.dec4(x, skip1)
     
 def get_quantized_model(model):
-    model = preprocess_for_quantize(
-        model,
-        trace_model=True,
-        relu6_to_relu=True,
-        equalize_iters=0,
-        equalize_merge_bias=True,
-        merge_bn=True,
-    )
+    # model = preprocess_for_quantize(
+    #     model,
+    #     trace_model=True,
+    #     relu6_to_relu=True,
+    #     equalize_iters=0,
+    #     equalize_merge_bias=True,
+    #     merge_bn=True,
+    # )
 
-    qmodel = quantize(
-        model,
-        quant_identity_map=QUANT_IDENTITY_MAP,
-        compute_layer_map=COMPUTE_LAYER_MAP,
-        quant_act_map=QUANT_ACT_MAP,
-        unsigned_act_tuple=UNSIGNED_ACT_TUPLE,
-        requantize_layer_handler_output=False,
-    )
+    # qmodel = quantize(
+    #     model,
+    #     quant_identity_map=QUANT_IDENTITY_MAP,
+    #     compute_layer_map=COMPUTE_LAYER_MAP,
+    #     quant_act_map=QUANT_ACT_MAP,
+    #     unsigned_act_tuple=UNSIGNED_ACT_TUPLE,
+    #     requantize_layer_handler_output=False,
+    # )
 
-    return qmodel
+    return model
 
 def save_quantized_model(model, path, input_shape=(1, 3, 256, 256)):
     qmodel = get_quantized_model(model)

@@ -1,0 +1,2 @@
+export PYTHONPATH=/root:$PYTHONPATH
+python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k  --quant_config 8 --data_path /pvc

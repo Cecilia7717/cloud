@@ -12,7 +12,7 @@ from onnx2torch import convert
 from torch import nn
 from torchvision.transforms import v2 as T
 from utils.quant_utils.quantize import quant_model
-# from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
+from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
 
 def get_transform(
     mean: Sequence[float],

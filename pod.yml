@@ -6,17 +6,13 @@ metadata:
 spec:
   containers:
   - name: int-container
-    image: gitlab-registry.nrp-nautilus.io/nrp/scientific-images/python
+    image: docker.io/cecilia7717/cloud@sha256:00538b5d37a9c96982428d07cce615da586530f6a1819a186b0b4cb3c7775064
     command: ["/bin/sh", "-c"]
     args:
     - >
       wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf' &&
-      unzip MODEL.zip &&
       wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr' &&
-      unzip SCRIPTS.zip &&
-      wget -O DOCKER.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=129zvA8cBOgaYKlLMksES9DluMHXYRmCM' &&
-      unzip DOCKER.zip &&
-      sleep 3600000
+      sleep 360000
     volumeMounts:
     - mountPath: /pvc
       name: pvc

@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     tar \
     unzip \
-    gcc-multilib \
+    # gcc-multilib \
     automake \
     # nvidia-utils-535 \   
     sudo &&\
@@ -32,8 +32,12 @@ RUN add-apt-repository ppa:ubuntugis/ppa && \
     apt-get update
 
 # Install python env
-RUN apt-get -y install python3 python-is-python3 python3-pip && \
-    python3 -m pip install --upgrade pip
+RUN apt-get -y install python3 python-is-python3 python3-pip cmake unzip && \
+    python3 -m pip install --upgrade pip && \
+    pip install onnxoptimizer==0.3.13
+
+FROM continuumio/miniconda3:24.7.1-0 
+RUN conda install -c conda-forge gdal=3.6 rasterio=1.4.3 onnx==1.15.0 
 
 # Install python requirements
 COPY ./requirements.txt /tmp/requirements.txt

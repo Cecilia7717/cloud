@@ -5,8 +5,8 @@ tensorboardX==2.6.2.2
 tqdm==4.67.1
 fire==0.7.0
 pandas==2.2.3
-rasterio==1.4.3
+# rasterio==1.4.3
 brevitas==0.11.0
-onnx==1.15.0
+# onnx==1.15.0
 onnx2torch==1.5.15
-onnxoptimizer==0.3.13
+# onnxoptimizer==0.3.13
