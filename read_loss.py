@@ -43,7 +43,7 @@ def plot_f1_scores(epochs, f1_1, f_test_1):
     # Plot both F1 scores
     line1, = plt.plot(epochs, f1_1, 'g-', linewidth=2, marker='o', markersize=3, label='train loss')
     line3, = plt.plot(epochs, f_test_1, 'g--', linewidth=2, marker='o', markersize=3, label='test loss')
-    
+    plt.ylim(0.4, 0.6)
     # Customize plot
     plt.xlabel('Epoch', fontsize=12)
     plt.ylabel('loss', fontsize=12)
@@ -59,11 +59,11 @@ def plot_f1_scores(epochs, f1_1, f_test_1):
         plt.xticks(rotation=45)
     
     plt.tight_layout()
-    plt.savefig('loss_plot_quan.png', dpi=300, bbox_inches='tight') # place to change the name of the output file
+    plt.savefig('loss_plot_quan_4.png', dpi=300, bbox_inches='tight') # place to change the name of the output file
     plt.show()
 
 if __name__ == "__main__":
-    log_file = "result_quan_1047.txt"  # Change to your file path
+    log_file = "result_quan_543.txt"  # Change to your file path
     epochs, f1_c1, f_test_1 = parse_f1_scores(log_file)
     
     if epochs:

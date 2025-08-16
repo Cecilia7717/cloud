@@ -1,2 +1,8 @@
+conda install -y -c conda-forge \
+onnxoptimizer==0.3.13 \
+onnx==1.15.0 
+apt-get update && apt-get install -y unzip
+unzip SCRIPTS.zip
+unzip MODEL.zip
 export PYTHONPATH=/root:$PYTHONPATH
-python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k  --quant_config 8 --data_path /pvc
+python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k  --quant_config 8 --data_path /pvc >> .txt 2>&1

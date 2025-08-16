@@ -52,6 +52,9 @@ def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics):
     line4, = plt.plot(epochs, f_test_2, 'r--', linewidth=2, marker='s', markersize=3, label='precision test 2')
     
     # Customize plot
+    plt.ylim(0.55, 1) # for recall
+    # plt.ylim(0.6, 0.95) # F1
+    # plt.ylim(0.6, 0.95) # precision
     plt.xlabel('Epoch', fontsize=12)
     plt.ylabel(metrics, fontsize=12)
     plt.title('{} by Epoch'.format(metrics), fontsize=14)
@@ -66,12 +69,12 @@ def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics):
         plt.xticks(rotation=45)
     
     plt.tight_layout()
-    plt.savefig('{}_scores_plot_quan.png'.format(metrics), dpi=300, bbox_inches='tight')
+    plt.savefig('{}_scores_plot_quan_4.png'.format(metrics), dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse and plot precision scores from a training log file.")
-    parser.add_argument("--log_file", type=str, default="result_quan_1047.txt", help="Path to the training log file.")
+    parser.add_argument("--log_file", type=str, default="result_quan_923_8.txt", help="Path to the training log file.")
     parser.add_argument("--metrics", type=str, default="Precision", help="precision/f1/recall score")
     
     args = parser.parse_args()

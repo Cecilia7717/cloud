@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: inter3090
+  name: inter3090-6
 spec:
   containers:
   - name: int-container
