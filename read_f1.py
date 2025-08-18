@@ -17,6 +17,8 @@ def parse_f1_scores(log_file, metrics):
             epoch_match = re.search(r"Epoch\[(\d+)\]", line)
             if epoch_match:
                 current_epoch = int(epoch_match.group(1))
+                if current_epoch >= 100:
+                    break
                 test = False
                 # Look for F1 in the next few lines
                 for _ in range(5):  # Check next 5 lines for metrics
@@ -41,7 +43,7 @@ def parse_f1_scores(log_file, metrics):
                             break
     return epochs, f1_1, f1_2, f_test_1, f_test_2
 
-def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics):
+def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics, bit):
     """Create a line plot of F1 scores over epochs"""
     plt.figure(figsize=(10, 6))
     
@@ -52,12 +54,12 @@ def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics):
     line4, = plt.plot(epochs, f_test_2, 'r--', linewidth=2, marker='s', markersize=3, label='precision test 2')
     
     # Customize plot
-    plt.ylim(0.55, 1) # for recall
-    # plt.ylim(0.6, 0.95) # F1
-    # plt.ylim(0.6, 0.95) # precision
+    plt.ylim(0.2, 1) # for recall
+    # plt.ylim(0, 0.95) # F1
+    # plt.ylim(0, 0.95) # precision
     plt.xlabel('Epoch', fontsize=12)
     plt.ylabel(metrics, fontsize=12)
-    plt.title('{} by Epoch'.format(metrics), fontsize=14)
+    plt.title('{} by Epoch for bit = {}'.format(metrics, bit), fontsize=14)
     plt.grid(True, linestyle='--', alpha=0.6)
     plt.legend()
     
@@ -69,16 +71,18 @@ def plot_f1_scores(epochs, f1_1, f1_2, f_test_1, f_test_2, metrics):
         plt.xticks(rotation=45)
     
     plt.tight_layout()
-    plt.savefig('{}_scores_plot_quan_4.png'.format(metrics), dpi=300, bbox_inches='tight')
+    plt.savefig('{}_scores_plot_quan_{}.png'.format(metrics, bit), dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse and plot precision scores from a training log file.")
-    parser.add_argument("--log_file", type=str, default="result_quan_923_8.txt", help="Path to the training log file.")
+    parser.add_argument("--bit", type=int, default=2, help="bit = 2/4/6/8")
+    # parser.add_argument("--log_file", type=str, default="result_quan_2.txt", help="Path to the training log file.")
     parser.add_argument("--metrics", type=str, default="Precision", help="precision/f1/recall score")
     
     args = parser.parse_args()
-    log_file = args.log_file
+    bit = args.bit
+    log_file = "result_quan_{}.txt".format(bit)
     metrics = args.metrics
     epochs, f1_c1, f1_c2, f_test_1, f_test_2 = parse_f1_scores(log_file, metrics)
     
@@ -87,6 +91,6 @@ if __name__ == "__main__":
         print(f"Class 1 precision: {f1_c1}")
         print(f"Class 2 precision: {f1_c2}")
         
-        plot_f1_scores(epochs, f1_c1, f1_c2, f_test_1, f_test_2, metrics)
+        plot_f1_scores(epochs, f1_c1, f1_c2, f_test_1, f_test_2, metrics, bit)
     else:
         print("No valid F1 data found in the log file!")
