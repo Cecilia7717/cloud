@@ -5,4 +5,6 @@ apt-get update && apt-get install -y unzip
 unzip SCRIPTS.zip
 unzip MODEL.zip
 export PYTHONPATH=/root:$PYTHONPATH
-python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k  --quant_config 2 --data_path /pvc >> 9_06.txt 2>&1
+python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 2 --data_path /pvc >> 2_23456.txt 2>&1
+
+python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 34567 --quant_config 2 --data_path /pvc >> 2_34567.txt 2>&1

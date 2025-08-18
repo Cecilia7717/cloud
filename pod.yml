@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: inter3090-2
+  name: 3090-8-34567
 spec:
   ttlSecondsAfterFinished: 0
   template:
