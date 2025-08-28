@@ -68,9 +68,9 @@ def plot_f1_scores_multiple(log_files, metrics, bit):
         plt.plot(epochs, f_test_2, color=colors[idx], linestyle='--', marker=markers[idx], markersize=3,
                  label=f'test 2 ({label_suffix})')
 
-    # plt.ylim(0.2, 1) # for recall
+    plt.ylim(0.2, 1) # for recall
     # plt.ylim(0, 0.95) # F1
-    plt.ylim(0, 0.95) # precision
+    # plt.ylim(0, 0.95) # precision
     plt.xlabel('Epoch', fontsize=12)
     plt.ylabel(metrics, fontsize=12)
     plt.title(f'{metrics} by Epoch for bit = {bit}', fontsize=14)
