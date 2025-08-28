@@ -435,6 +435,8 @@ def create_trainer(
         ), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
         logger.info(f"Resume from a checkpoint: {checkpoint_fp.as_posix()}")
         checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
+        model.load_state_dict(checkpoint["model"], strict=False)
+        to_save = {"trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler}
         Checkpoint.load_objects(to_load=to_save, checkpoint=checkpoint)
 
     return trainer
