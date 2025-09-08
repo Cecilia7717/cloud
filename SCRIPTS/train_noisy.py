@@ -30,8 +30,10 @@ from torch.amp import GradScaler
 from utils.quant_utils.save_handler_qonnx import CheckpointQONNX, DiskSaverQONNX
 from utils.loss import TrainingLoss
 from torchvision import tv_tensors
-
-
+import os
+from quantized_loss_landscape.workspace.common.benchmarks.noise import Noise
+import pandas as pd
+from SCRIPTS.utils.utils import save_tiff
 def training(local_rank, config):
     rank = idist.get_rank()
     manual_seed(config["seed"] + rank)
@@ -59,134 +61,137 @@ def training(local_rank, config):
             config["cuda device name"] = torch.cuda.get_device_name(local_rank)
 
     # Setup dataflow, model, optimizer, criterion
-    train_loader, test_loader = get_dataflow(config)
+    get_dataflow(config)
 
-    config["num_iters_per_epoch"] = len(train_loader)
-    model, optimizer, criterion, lr_scheduler = initialize(config)
+    print("done load training and testing dataset.")
+    # config["num_iters_per_epoch"] = len(train_loader)
+    # model, optimizer, criterion, lr_scheduler = initialize(config)
 
-    # get transformations
-    train_transform, test_transform = get_transform(
-        mean=config["img_mean"], std=config["img_rescale"]
-    )
+    # # get transformations
+    # train_transform, test_transform = get_transform(
+    #     mean=config["img_mean"], std=config["img_rescale"]
+    # )
 
-    # Create trainer for current task
-    trainer = create_trainer(
-        model,
-        train_transform,
-        optimizer,
-        criterion,
-        lr_scheduler,
-        train_loader.sampler,
-        config,
-        logger,
-    )
+    # # Create trainer for current task
+    # trainer = create_trainer(
+    #     model,
+    #     train_transform,
+    #     optimizer,
+    #     criterion,
+    #     lr_scheduler,
+    #     train_loader.sampler,
+    #     config,
+    #     logger,
+    # )
 
-    # Let's now setup evaluator engine to perform model's validation and compute metrics
-    class_count = 2
-    metrics = get_metrics(class_count=class_count, criterion=criterion)
+    # # Let's now setup evaluator engine to perform model's validation and compute metrics
+    # class_count = 2
+    # metrics = get_metrics(class_count=class_count, criterion=criterion)
 
-    # We define two evaluators as they wont have exactly similar roles:
-    # - `evaluator` will save the best model based on validation score
-    evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
-    train_evaluator = create_evaluator(
-        model, test_transform, metrics=metrics, config=config
-    )
+    # # We define two evaluators as they wont have exactly similar roles:
+    # # - `evaluator` will save the best model based on validation score
+    # evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
+    # train_evaluator = create_evaluator(
+    #     model, test_transform, metrics=metrics, config=config
+    # )
 
-    def run_validation(engine):
-        epoch = trainer.state.epoch
-        state = train_evaluator.run(train_loader)
-        log_metrics(logger, epoch, state.times["COMPLETED"], "Train", state.metrics)
-        state = evaluator.run(test_loader)
-        log_metrics(logger, epoch, state.times["COMPLETED"], "Test", state.metrics)
+    # def run_validation(engine):
+    #     epoch = trainer.state.epoch
+    #     state = train_evaluator.run(train_loader)
+    #     log_metrics(logger, epoch, state.times["COMPLETED"], "Train", state.metrics)
+    #     state = evaluator.run(test_loader)
+    #     log_metrics(logger, epoch, state.times["COMPLETED"], "Test", state.metrics)
 
-    trainer.add_event_handler(
-        Events.EPOCH_COMPLETED(every=config["validate_every"]) | Events.COMPLETED,
-        run_validation,
-    )
+    # trainer.add_event_handler(
+    #     Events.EPOCH_COMPLETED(every=config["validate_every"]) | Events.COMPLETED,
+    #     run_validation,
+    # )
 
-    if rank == 0:
-        # Setup TensorBoard logging on trainer and evaluators. Logged values are:
-        #  - Training metrics, e.g. running average loss values
-        #  - Learning rate
-        #  - Evaluation train/test metrics
-        evaluators = {"training": train_evaluator, "test": evaluator}
-        tb_logger = common.setup_tb_logging(
-            output_path, trainer, optimizer, evaluators=evaluators
-        )
+    # if rank == 0:
+    #     # Setup TensorBoard logging on trainer and evaluators. Logged values are:
+    #     #  - Training metrics, e.g. running average loss values
+    #     #  - Learning rate
+    #     #  - Evaluation train/test metrics
+    #     evaluators = {"training": train_evaluator, "test": evaluator}
+    #     tb_logger = common.setup_tb_logging(
+    #         output_path, trainer, optimizer, evaluators=evaluators
+    #     )
 
-    # Store 2 best models by validation accuracy starting from num_epochs / 2:
-    # Best model save Handler ONNX
-    in_channels = 3
-    best_model_handler_qonnx_export = CheckpointQONNX(
-        {
-            "model": model,
-            "model_suffix": "",  ##can be "_student" here for distillation
-            "model_shape": torch.tensor(
-                [
-                    1,
-                    in_channels,
-                    config["input_size"][0],
-                    config["input_size"][1],
-                ]
-            ),
-        },
-        getSaveHandlerQONNX(config),
-        filename_prefix="best",
-        n_saved=2,
-        global_step_transform=global_step_from_engine(trainer),
-        score_name="test_F1",
-        score_function=lambda _: np.mean(
-            np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
-        ),
-    )
-    evaluator.add_event_handler(
-        Events.COMPLETED(every=1),
-        best_model_handler_qonnx_export,
-    )
+    # # Store 2 best models by validation accuracy starting from num_epochs / 2:
+    # # Best model save Handler ONNX
+    # in_channels = 3
+    # best_model_handler_qonnx_export = CheckpointQONNX(
+    #     {
+    #         "model": model,
+    #         "model_suffix": "",  ##can be "_student" here for distillation
+    #         "model_shape": torch.tensor(
+    #             [
+    #                 1,
+    #                 in_channels,
+    #                 config["input_size"][0],
+    #                 config["input_size"][1],
+    #             ]
+    #         ),
+    #     },
+    #     getSaveHandlerQONNX(config),
+    #     filename_prefix="best",
+    #     n_saved=2,
+    #     global_step_transform=global_step_from_engine(trainer),
+    #     score_name="test_F1",
+    #     score_function=lambda _: np.mean(
+    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
+    #     ),
+    # )
+    # evaluator.add_event_handler(
+    #     Events.COMPLETED(every=1),
+    #     best_model_handler_qonnx_export,
+    # )
 
-    # Best model save Handler
-    best_model_handler = Checkpoint(
-        {"model": model},
-        get_save_handler(config),
-        filename_prefix="best",
-        n_saved=2,
-        global_step_transform=global_step_from_engine(trainer),
-        score_name="test_F1",
-        score_function=lambda _: np.mean(
-            np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
-        ),
-    )
-    evaluator.add_event_handler(
-        Events.COMPLETED(every=1),
-        best_model_handler,
-    )
+    # # Best model save Handler
+    # best_model_handler = Checkpoint(
+    #     {"model": model},
+    #     get_save_handler(config),
+    #     filename_prefix="best",
+    #     n_saved=2,
+    #     global_step_transform=global_step_from_engine(trainer),
+    #     score_name="test_F1",
+    #     score_function=lambda _: np.mean(
+    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
+    #     ),
+    # )
+    # evaluator.add_event_handler(
+    #     Events.COMPLETED(every=1),
+    #     best_model_handler,
+    # )
 
-    # In order to check training resuming we can stop training on a given iteration
-    if config["stop_iteration"] is not None:
+    # # In order to check training resuming we can stop training on a given iteration
+    # if config["stop_iteration"] is not None:
 
-        @trainer.on(Events.ITERATION_STARTED(once=config["stop_iteration"]))
-        def _():
-            logger.info(f"Stop training on {trainer.state.iteration} iteration")
-            trainer.terminate()
+    #     @trainer.on(Events.ITERATION_STARTED(once=config["stop_iteration"]))
+    #     def _():
+    #         logger.info(f"Stop training on {trainer.state.iteration} iteration")
+    #         trainer.terminate()
 
-    try:
-        trainer.run(train_loader, max_epochs=config["num_epochs"])
-    except Exception as e:
-        logger.exception("")
-        raise e
+    # try:
+    #     trainer.run(train_loader, max_epochs=config["num_epochs"])
+    # except Exception as e:
+    #     logger.exception("")
+    #     raise e
 
-    if rank == 0:
-        tb_logger.close()
+    # if rank == 0:
+    #     tb_logger.close()
 
 
 def run(
-    seed: int = 12345,
+    seed: int = 23456,
+    noise_adder: Noise=Noise.add_gaussian_noise,
+    noise_module: float=2.0, # percentage
     data_path: str = "/data",
     csv_paths: dict = {
         "train": "/pvc/train.csv",
         "test": "/pvc/valid.csv",
     },
-    output_path: str = "./output-alcd-cloud-noisy/",
+    output_path: str = "./output-alcd-cloud-quan/",
     input_size=(512, 512),
     img_mean: List[float] = [0.0, 0.0, 0.0],
     img_rescale: List[float] = [8657.0, 8657.0, 8657.0],
@@ -259,32 +264,81 @@ def run(
     with idist.Parallel(backend=backend, **spawn_kwargs) as parallel:
         parallel.run(training, config)
 
+def save_noisy_dataset(clean_ds, new_csv_path, noise_adder, noise_module, seed=None, save_root = './'):
+    os.makedirs(save_root, exist_ok=True)
+    records = []
+    print(f"Start Noisy dataset save:\n  Images → {save_root}\n  CSV → {new_csv_path}\n  noise_adder={str(noise_adder)}")
+
+    for idx in range(len(clean_ds)):
+        img, target = clean_ds[idx]   # clean image + mask target
+        row = clean_ds.csv.iloc[idx]  # original CSV row
+
+        # apply noise
+        if seed is not None:
+            Noise.set_seed(seed)
+        noisy_img = noise_adder(img, percentage=noise_module)
+        noisy_img = torch.clamp(torch.tensor(noisy_img, dtype=torch.float32), 0, noisy_img.max())
+
+        # save noisy image
+        noisy_in_name = f"noisy_{idx}.tif"
+        noisy_in_path = os.path.join(save_root, noisy_in_name)
+        save_tiff(noisy_img, noisy_in_path)
+
+        # keep original mask reference (or copy mask too if desired)
+        records.append({"in": os.path.join(os.path.basename(save_root), noisy_in_name),
+                        "out": row["out"]})
+
+    # write new CSV
+    pd.DataFrame(records).to_csv(new_csv_path, index=False)
+    print(f"✅ Noisy dataset saved:\n  Images → {save_root}\n  CSV → {new_csv_path}")
 
 def get_dataflow(config):
     # - Get train/test datasets
     with idist.one_rank_first(local=True):
         train_dataset, test_dataset = get_train_test_datasets(
-            config["data_path"], csv_paths=config["csv_paths"]
-        )
+            config["data_path"], 
+            csv_paths=config["csv_paths"])
+    noisy_images_dir = "./train_noisy"
+    noisy_images_csv = "./train_noisy.csv"
+    noisy_images_dir_test = "./test_noisy"
+    noisy_images_csv_test = "./test_noisy.csv"
 
-    # Setup data loader also adapted to distributed config: nccl, gloo, xla-tpu
-    train_loader = idist.auto_dataloader(
+    save_noisy_dataset(
         train_dataset,
-        batch_size=config["batch_size"],
-        num_workers=config["num_workers"],
-        shuffle=True,
-        drop_last=True,
-        pin_memory=True,
+        save_root=noisy_images_dir,
+        new_csv_path=noisy_images_csv,
+        noise_adder=config['noise_adder'],
+        noise_module=config['noise_module'],
+        seed=config['seed'],
     )
-
-    test_loader = idist.auto_dataloader(
+    save_noisy_dataset(
         test_dataset,
-        batch_size=2 * config["batch_size"],
-        num_workers=config["num_workers"],
-        shuffle=False,
-        pin_memory=True,
+        save_root=noisy_images_dir_test,
+        new_csv_path=noisy_images_csv_test,
+        noise_adder=config['noise_adder'],
+        noise_module=config['noise_module'],
+        seed=config['seed'],
     )
-    return train_loader, test_loader
+    
+    # # Setup data loader also adapted to distributed config: nccl, gloo, xla-tpu
+    # train_loader = idist.auto_dataloader(
+    #     train_dataset,
+    #     batch_size=config["batch_size"],
+    #     num_workers=config["num_workers"],
+    #     shuffle=True,
+    #     drop_last=True,
+    #     pin_memory=True,
+    # )
+    
+
+    # test_loader = idist.auto_dataloader(
+    #     test_dataset,
+    #     batch_size=2 * config["batch_size"],
+    #     num_workers=config["num_workers"],
+    #     shuffle=False,
+    #     pin_memory=True,
+    # )
+    # return train_loader, test_loader
 
 
 def initialize(config):

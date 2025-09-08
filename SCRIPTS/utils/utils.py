@@ -80,6 +80,32 @@ def read_tiff(filepath: str) -> np.ndarray:
     with rasterio.open(filepath, mode="r", crs=None, transform=None) as i_raster:
         return np.array(i_raster.read()).astype(np.float32)
 
+def save_tiff(array: np.ndarray, filepath: str):
+    """
+    Save a numpy array as a .tif file using rasterio.
+    The array should have shape (C, H, W) to match rasterio's channel-first convention.
+    """
+    if isinstance(array, torch.Tensor):
+        array = array.detach().cpu().numpy()
+    # Ensure channel-first order
+    if array.ndim == 2:  
+        array = array[np.newaxis, :, :]  # (H, W) → (1, H, W)
+    elif array.ndim == 3 and array.shape[0] not in [1, 3]:  
+        # If array is (H, W, C), transpose to (C, H, W)
+        array = array.transpose(2, 0, 1)
+
+    C, H, W = array.shape
+
+    with rasterio.open(
+        filepath,
+        "w",
+        driver="GTiff",
+        height=H,
+        width=W,
+        count=C,
+        dtype=array.dtype,
+    ) as dst:
+        dst.write(array)
 
 class ALCDDataset(torch.utils.data.Dataset):
     def __init__(
@@ -118,8 +144,10 @@ class ALCDDataset(torch.utils.data.Dataset):
 
 
 def get_train_test_datasets(data_path, csv_paths):
+    print("start train test")
     train_ds = ALCDDataset(csv_path=csv_paths["train"], root_dir=data_path)
     test_ds = ALCDDataset(csv_path=csv_paths["test"], root_dir=data_path)
+    print("done get train test datasets")
     return train_ds, test_ds
 
 

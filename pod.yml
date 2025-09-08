@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 3090-8-34567
+  name: 3090-10-quan-4
 spec:
   ttlSecondsAfterFinished: 0
   template:
@@ -15,6 +15,15 @@ spec:
         - >
           wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf' &&
           wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr' &&
+          pip install gdown &&
+          gdown 1GfZ8m516QhZtTrmFFGwHY844RiS9iVjv -O quantized_loss_landscape.zip &&
+          conda install -y -c conda-forge onnxoptimizer==0.3.13 onnx==1.15.0 &&
+          apt-get update && apt-get install -y unzip &&
+          pip install pytorch_lightning matplotlib pyhessian scipy &&
+          pip install git+https://github.com/fra31/auto-attack &&
+          unzip SCRIPTS.zip &&
+          unzip MODEL.zip &&
+          unzip quantized_loss_landscape &&
           sleep 360000
         volumeMounts:
         - mountPath: /pvc
