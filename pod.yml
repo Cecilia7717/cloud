@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 3090-10-quan-4
+  name: 3090-4-quan-8
 spec:
   ttlSecondsAfterFinished: 0
   template:
