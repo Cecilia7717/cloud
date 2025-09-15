@@ -1,268 +1,110 @@
-/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
-  from torch.distributed.optim import ZeroRedundancyOptimizer
-2025-08-19 01:26:31,043 ignite.distributed.launcher.Parallel INFO: - Run '<function training at 0x7f7632d8e200>' in 1 processes
-2025-08-19 01:26:31,184 ALCD_CLOUD INFO: Train ags_tiny_unet_50k on CIFAR10
-2025-08-19 01:26:31,184 ALCD_CLOUD INFO: - PyTorch version: 2.4.1+cu121
-2025-08-19 01:26:31,184 ALCD_CLOUD INFO: - Ignite version: 0.5.1
-2025-08-19 01:26:31,223 ALCD_CLOUD INFO: - GPU Device: NVIDIA GeForce RTX 3090
-2025-08-19 01:26:31,223 ALCD_CLOUD INFO: - CUDA version: 12.1
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: - CUDNN version: 90100
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 
+(base) root@test-q2-n2-rj9c6:/# ls /pvc
+10                 DB_CLOUD_ALCD_full.zip             output.zip                             result_quan_6_gn_2_test_noise_2.txt    result_test_quan_4_noise_10.txt
+2                  combined.zip                       result_quan_2_gn_2_test_noise_10.txt   result_quan_6_gn_2_test_noise_5.txt    result_test_quan_4_noise_2.txt
+5                  output-alcd-cloud-noisy-10-4       result_quan_2_gn_2_test_noise_2.txt    result_quan_6_gn_5_test_noise_10.txt   result_test_quan_4_noise_5.txt
+DB_CLOUD_ALCD.z01  output-alcd-cloud-noisy-10-quan-2  result_quan_2_gn_2_test_noise_5.txt    result_quan_6_gn_5_test_noise_2.txt    result_test_quan_6_noise_10.txt
+DB_CLOUD_ALCD.z02  output-alcd-cloud-noisy-10-quan-6  result_quan_4_gn_10_test_noise_10.txt  result_quan_6_gn_5_test_noise_5.txt    result_test_quan_6_noise_2.txt
+DB_CLOUD_ALCD.z03  output-alcd-cloud-noisy-10-quan-8  result_quan_4_gn_10_test_noise_2.txt   result_quan_8_gn_10_test_noise_10.txt  result_test_quan_6_noise_5.txt
+DB_CLOUD_ALCD.z04  output-alcd-cloud-noisy-2-quan-2   result_quan_4_gn_10_test_noise_5.txt   result_quan_8_gn_10_test_noise_2.txt   result_test_quan_8_noise_10.txt
+DB_CLOUD_ALCD.z05  output-alcd-cloud-noisy-2-quan-4   result_quan_4_gn_2_test_noise_10.txt   result_quan_8_gn_10_test_noise_5.txt   result_test_quan_8_noise_2.txt
+DB_CLOUD_ALCD.z06  output-alcd-cloud-noisy-2-quan-6   result_quan_4_gn_2_test_noise_2.txt    result_quan_8_gn_2_test_noise_10.txt   result_test_quan_8_noise_5.txt
+DB_CLOUD_ALCD.z07  output-alcd-cloud-noisy-2-quan-8   result_quan_4_gn_2_test_noise_5.txt    result_quan_8_gn_2_test_noise_2.txt    train
+DB_CLOUD_ALCD.z08  output-alcd-cloud-noisy-5-quan-4   result_quan_4_gn_5_test_noise_10.txt   result_quan_8_gn_2_test_noise_5.txt    train.csv
+DB_CLOUD_ALCD.z09  output-alcd-cloud-noisy-5-quan-6   result_quan_4_gn_5_test_noise_2.txt    result_quan_8_gn_5_test_noise_10.txt   valid
+DB_CLOUD_ALCD.z10  output-alcd-cloud-noisy-5-quan-8   result_quan_4_gn_5_test_noise_5.txt    result_quan_8_gn_5_test_noise_2.txt    valid.csv
+DB_CLOUD_ALCD.z11  output-alcd-cloud-quan-2-23456     result_quan_6_gn_10_test_noise_10.txt  result_quan_8_gn_5_test_noise_5.txt    wget-log
+DB_CLOUD_ALCD.z12  output-alcd-cloud-quan-4-23456     result_quan_6_gn_10_test_noise_2.txt   result_test_quan_2_noise_10.txt
+DB_CLOUD_ALCD.z13  output-alcd-cloud-quan-6-23456     result_quan_6_gn_10_test_noise_5.txt   result_test_quan_2_noise_2.txt
+DB_CLOUD_ALCD.zip  output-alcd-cloud-quan-8-23456     result_quan_6_gn_2_test_noise_10.txt   result_test_quan_2_noise_5.txt
+(base) root@test-q2-n2-rj9c6:/# ls -R /pvc/output-alcd-cloud-*
+/pvc/output-alcd-cloud-noisy-10-4:
+ags_tiny_unet_50k_backend-None-1_20250909-002426
 
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: Configuration:
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	seed: 23456
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	data_path: /pvc
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	csv_paths: {'train': '/pvc/train.csv', 'test': '/pvc/valid.csv'}
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	output_path: ./output-alcd-cloud-quan/
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	input_size: (512, 512)
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	img_mean: [0.0, 0.0, 0.0]
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	img_rescale: [8657.0, 8657.0, 8657.0]
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	model: ags_tiny_unet_50k
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	quant_config: 6
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	class_weights: [0.1, 0.9]
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	batch_size: 28
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	weight_decay: 0.0002
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	num_workers: 8
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	num_epochs: 102
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	learning_rate: 0.001
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	num_warmup_epochs: 5
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	validate_every: 3
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	checkpoint_every: 1000
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	backend: None
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	resume_from: output-alcd-cloud-quan/ags_tiny_unet_50k_backend-None-1_20250818-183500/training_checkpoint_25000.pt
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	log_every_iters: 5
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	nproc_per_node: None
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	stop_iteration: None
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 	with_amp: False
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: 
+/pvc/output-alcd-cloud-noisy-10-4/ags_tiny_unet_50k_backend-None-1_20250909-002426:
+'best_checkpoint_75_test_F1=0.8391.onnx'  'best_model_75_test_F1=0.8391.pt'   events.out.tfevents.1757377467.3090-10-quan-4-rh2r9
+'best_checkpoint_93_test_F1=0.8390.onnx'  'best_model_93_test_F1=0.8390.pt'   training_checkpoint_31000.pt
 
-2025-08-19 01:26:31,224 ALCD_CLOUD INFO: Output path: output-alcd-cloud-quan/ags_tiny_unet_50k_backend-None-1_20250819-012631
-2025-08-19 01:26:31,253 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
-	{'batch_size': 28, 'num_workers': 8, 'shuffle': True, 'drop_last': True, 'pin_memory': True}
-/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(_create_warning_msg(
-2025-08-19 01:26:31,254 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
-	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
-2025-08-19 01:26:31,625 ALCD_CLOUD INFO: Resume from a checkpoint: output-alcd-cloud-quan/ags_tiny_unet_50k_backend-None-1_20250818-183500/training_checkpoint_25000.pt
-/SCRIPTS/train_quan.py:437: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
-  checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
-2025-08-19 01:26:31,709 ALCD_CLOUD INFO: Engine run resuming from iteration 25000, epoch 79 until 102 epochs
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/torch/_tensor.py:1413: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at ../c10/core/TensorImpl.h:1925.)
-  return super().rename(names)
-/opt/conda/lib/python3.12/site-packages/torch/nn/modules/conv.py:454: UserWarning: Defining your `__torch_function__` as a plain method is deprecated and will be an error in future, please define it as a classmethod. (Triggered internally at ../torch/csrc/utils/python_arg_parser.cpp:294.)
-  return F.conv2d(input, weight, bias, self.stride,
-2025-08-19 01:26:49,763 ALCD_CLOUD INFO: Epoch[80] Complete. Time taken: 00:00:17.556
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:29:57,574 ALCD_CLOUD INFO: Epoch[81] - Evaluation time (seconds): 74.306
- - Train metrics:
- 	Precision: tensor([0.9286, 0.7674], dtype=torch.float64)
-	Recall: tensor([0.9370, 0.7424], dtype=torch.float64)
-	F1: tensor([0.9328, 0.7547], dtype=torch.float64)
-	Loss: 0.3972220618884784
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:32:01,490 ALCD_CLOUD INFO: Epoch[81] - Evaluation time (seconds): 123.822
- - Test metrics:
- 	Precision: tensor([0.9194, 0.7804], dtype=torch.float64)
-	Recall: tensor([0.9370, 0.7314], dtype=torch.float64)
-	F1: tensor([0.9281, 0.7551], dtype=torch.float64)
-	Loss: 0.41131271438912026
-2025-08-19 01:32:01,490 ALCD_CLOUD INFO: Epoch[81] Complete. Time taken: 00:05:11.726
-/opt/conda/lib/python3.12/site-packages/torch/nn/modules/conv.py:454: UserWarning: Defining your `__torch_function__` as a plain method is deprecated and will be an error in future, please define it as a classmethod. (Triggered internally at ../torch/csrc/utils/python_arg_parser.cpp:294.)
-  return F.conv2d(input, weight, bias, self.stride,
-/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(_create_warning_msg(
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:33:52,626 ALCD_CLOUD INFO: Epoch[82] Complete. Time taken: 00:01:51.136
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:35:44,642 ALCD_CLOUD INFO: Epoch[83] Complete. Time taken: 00:01:52.015
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:38:47,843 ALCD_CLOUD INFO: Epoch[84] - Evaluation time (seconds): 71.383
- - Train metrics:
- 	Precision: tensor([0.9182, 0.8303], dtype=torch.float64)
-	Recall: tensor([0.9603, 0.6942], dtype=torch.float64)
-	F1: tensor([0.9388, 0.7561], dtype=torch.float64)
-	Loss: 0.41000852319324793
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:39:46,021 ALCD_CLOUD INFO: Epoch[84] - Evaluation time (seconds): 58.106
- - Test metrics:
- 	Precision: tensor([0.9087, 0.8345], dtype=torch.float64)
-	Recall: tensor([0.9584, 0.6854], dtype=torch.float64)
-	F1: tensor([0.9329, 0.7526], dtype=torch.float64)
-	Loss: 0.4299154555835663
-2025-08-19 01:39:46,021 ALCD_CLOUD INFO: Epoch[84] Complete. Time taken: 00:04:01.378
-/opt/conda/lib/python3.12/site-packages/torch/nn/modules/conv.py:454: UserWarning: Defining your `__torch_function__` as a plain method is deprecated and will be an error in future, please define it as a classmethod. (Triggered internally at ../torch/csrc/utils/python_arg_parser.cpp:294.)
-  return F.conv2d(input, weight, bias, self.stride,
-/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(_create_warning_msg(
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:41:37,501 ALCD_CLOUD INFO: Epoch[85] Complete. Time taken: 00:01:51.479
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
-2025-08-19 01:53:38,160 ALCD_CLOUD INFO: Epoch[86] Complete. Time taken: 00:12:00.659
+/pvc/output-alcd-cloud-noisy-10-quan-2:
+ags_tiny_unet_50k_backend-None-1_20250909-002347  output-alcd-cloud-noisy
+
+/pvc/output-alcd-cloud-noisy-10-quan-2/ags_tiny_unet_50k_backend-None-1_20250909-002347:
+'best_checkpoint_12_test_F1=0.8077.onnx'  'best_model_12_test_F1=0.8077.pt'   events.out.tfevents.1757377430.3090-10-quan-2-8vbhx
+'best_checkpoint_6_test_F1=0.8171.onnx'   'best_model_6_test_F1=0.8171.pt'    training_checkpoint_4000.pt
+
+/pvc/output-alcd-cloud-noisy-10-quan-2/output-alcd-cloud-noisy:
+ags_tiny_unet_50k_backend-None-1_20250909-002347
+
+/pvc/output-alcd-cloud-noisy-10-quan-2/output-alcd-cloud-noisy/ags_tiny_unet_50k_backend-None-1_20250909-002347:
+'best_checkpoint_24_test_F1=0.8170.onnx'  'best_model_24_test_F1=0.8170.pt'   events.out.tfevents.1757377430.3090-10-quan-2-8vbhx
+'best_checkpoint_6_test_F1=0.8171.onnx'   'best_model_6_test_F1=0.8171.pt'    training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-10-quan-6:
+ags_tiny_unet_50k_backend-None-1_20250909-112342
+
+/pvc/output-alcd-cloud-noisy-10-quan-6/ags_tiny_unet_50k_backend-None-1_20250909-112342:
+'best_checkpoint_90_test_F1=0.8413.onnx'  'best_model_90_test_F1=0.8413.pt'   events.out.tfevents.1757417023.3090-10-quan-6-pjjxj
+'best_checkpoint_93_test_F1=0.8392.onnx'  'best_model_93_test_F1=0.8392.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-10-quan-8:
+ags_tiny_unet_50k_backend-None-1_20250909-023033
+
+/pvc/output-alcd-cloud-noisy-10-quan-8/ags_tiny_unet_50k_backend-None-1_20250909-023033:
+'best_checkpoint_54_test_F1=0.8403.onnx'  'best_model_54_test_F1=0.8403.pt'   events.out.tfevents.1757385035.3090-10-quan-8-rhv4n
+'best_checkpoint_90_test_F1=0.8408.onnx'  'best_model_90_test_F1=0.8408.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-2-quan-2:
+ags_tiny_unet_50k_backend-None-1_20250909-145445
+
+/pvc/output-alcd-cloud-noisy-2-quan-2/ags_tiny_unet_50k_backend-None-1_20250909-145445:
+'best_checkpoint_100_test_F1=0.8322.onnx'  'best_model_100_test_F1=0.8322.pt'   events.out.tfevents.1757429687.3090-2-quan-2-5fhrq
+'best_checkpoint_72_test_F1=0.8325.onnx'   'best_model_72_test_F1=0.8325.pt'    training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-2-quan-4:
+ags_tiny_unet_50k_backend-None-1_20250910-084353
+
+/pvc/output-alcd-cloud-noisy-2-quan-4/ags_tiny_unet_50k_backend-None-1_20250910-084353:
+'best_checkpoint_75_test_F1=0.8385.onnx'  'best_model_75_test_F1=0.8385.pt'   events.out.tfevents.1757493834.3090-2-quan-4-6wrgn
+'best_checkpoint_90_test_F1=0.8390.onnx'  'best_model_90_test_F1=0.8390.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-2-quan-6:
+ags_tiny_unet_50k_backend-None-1_20250909-145706
+
+/pvc/output-alcd-cloud-noisy-2-quan-6/ags_tiny_unet_50k_backend-None-1_20250909-145706:
+'best_checkpoint_90_test_F1=0.8403.onnx'  'best_model_90_test_F1=0.8403.pt'   events.out.tfevents.1757429826.3090-2-quan-6-f2ttg
+'best_checkpoint_99_test_F1=0.8394.onnx'  'best_model_99_test_F1=0.8394.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-2-quan-8:
+ags_tiny_unet_50k_backend-None-1_20250909-143508
+
+/pvc/output-alcd-cloud-noisy-2-quan-8/ags_tiny_unet_50k_backend-None-1_20250909-143508:
+'best_checkpoint_75_test_F1=0.8411.onnx'  'best_model_75_test_F1=0.8411.pt'   events.out.tfevents.1757428509.3090-2-quan-8-97pfj
+'best_checkpoint_90_test_F1=0.8416.onnx'  'best_model_90_test_F1=0.8416.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-5-quan-4:
+ags_tiny_unet_50k_backend-None-1_20250909-051420
+
+/pvc/output-alcd-cloud-noisy-5-quan-4/ags_tiny_unet_50k_backend-None-1_20250909-051420:
+'best_checkpoint_60_test_F1=0.8396.onnx'  'best_model_60_test_F1=0.8396.pt'   events.out.tfevents.1757394862.3090-5-quan-4-ktczr
+'best_checkpoint_69_test_F1=0.8391.onnx'  'best_model_69_test_F1=0.8391.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-5-quan-6:
+ags_tiny_unet_50k_backend-None-1_20250909-065216
+
+/pvc/output-alcd-cloud-noisy-5-quan-6/ags_tiny_unet_50k_backend-None-1_20250909-065216:
+'best_checkpoint_75_test_F1=0.8410.onnx'  'best_model_75_test_F1=0.8410.pt'   events.out.tfevents.1757400738.3090-5-quan-6-l2v49
+'best_checkpoint_96_test_F1=0.8393.onnx'  'best_model_96_test_F1=0.8393.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-noisy-5-quan-8:
+ags_tiny_unet_50k_backend-None-1_20250909-023031
+
+/pvc/output-alcd-cloud-noisy-5-quan-8/ags_tiny_unet_50k_backend-None-1_20250909-023031:
+'best_checkpoint_54_test_F1=0.8403.onnx'  'best_model_54_test_F1=0.8403.pt'   events.out.tfevents.1757385034.3090-5-quan-8-rkg4h
+'best_checkpoint_90_test_F1=0.8406.onnx'  'best_model_90_test_F1=0.8406.pt'   training_checkpoint_31000.pt
+
+/pvc/output-alcd-cloud-quan-2-23456/ags_tiny_unet_50k_backend-None-1_20250818-182321/best_model_78_test_F1=0.8281.pt
+
+/pvc/output-alcd-cloud-quan-4-23456/ags_tiny_unet_50k_backend-None-1_20250818-182859/best_model_84_test_F1=0.8402.pt
+
+/pvc/output-alcd-cloud-quan-6-23456/ags_tiny_unet_50k_backend-None-1_20250818-183500/best_model_51_test_F1=0.8402.pt
+
+/pvc/output-alcd-cloud-quan-8-23456/ags_tiny_unet_50k_backend-None-1_20250818-183924/best_model_114_test_F1=0.8516.pt
