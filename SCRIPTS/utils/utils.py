@@ -153,7 +153,7 @@ def get_train_test_datasets(data_path, csv_paths):
 def get_test_datasets(data_path, csv_paths):
     # print("start train test")
     # train_ds = ALCDDataset(csv_path=csv_paths["train"], root_dir=data_path)
-    test_ds = ALCDDataset(csv_path=csv_paths["test"], root_dir=data_path)
+    test_ds = ALCDDataset(csv_path=csv_paths, root_dir=data_path)
     print("done get train test datasets")
     return test_ds
 
