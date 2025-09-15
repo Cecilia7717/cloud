@@ -14,10 +14,10 @@ python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant
 python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 2 --data_path /pvc/ --csv_paths '{"train": "/pvc/2/train_noisy.csv", "test": "/pvc/2/test_noisy.csv"}' >> 2_2.txt 2>&1
 
 python /SCRIPTS/train_quan.py run --resume_from="output-alcd-cloud-quan/ags_tiny_unet_50k_backend-None-1_20250818-184146/" --data_path=/pvc --output_path="./output-alcd-cloud-quan/" --num_epochs=102 --model ags_tiny_unet_50k --seed 34567 --quant_config 6  >> 6-34567-final.txt 2>&1
-python /SCRIPTS/test.py run \
+python /SCRIPTS/test.py test-only \
     --model ags_tiny_unet_50k \
     --seed 23456 \
     --quant_config 2 \
     --data_path /pvc/ \
-    --csv_paths.test=/pvc/5/valid_noisy.csv \
-    --resume_from="output-alcd-cloud-quan-2-23456/ags_tiny_unet_50k_backend-None-1_20250818-182321/best_model_78_test_F1=0.8281.pt"
+    --csv_paths '{"train": "/pvc/5/train_noisy.csv", "test": "/pvc/5/test_noisy.csv"}' \
+    --resume_from="/pvc/output-alcd-cloud-quan-2-23456/ags_tiny_unet_50k_backend-None-1_20250818-182321/best_model_75_test_F1=0.8269.pt" >> result_test_quan_2_noise_5.txt  2>&1

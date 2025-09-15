@@ -68,18 +68,23 @@ def test_only(
             manual_seed(config["seed"] + idist.get_rank())
 
             # Dataflow (test only)
-            test_loader = get_dataflow(config)
-
+            train_loader, test_loader = get_dataflow(config)
+            config["num_iters_per_epoch"] = len(train_loader)
             # Model + criterion
             model, _, criterion, _ = initialize(config)
 
             # Load checkpoint
             if config["resume_from"] is None:
                 raise ValueError("--resume_from must be specified for test_only")
+            checkpoint_fp = Path(resume_from)
             ckpt = torch.load(config["resume_from"], map_location="cpu")
-            model.load_state_dict(ckpt["model"], strict=False)
-
+            if "model" in ckpt:
+                state_dict = ckpt["model"]
+            else:
+                # Plain state dict (your case for best_model_*.pt)
+                state_dict = ckpt
             # Evaluator
+            model.load_state_dict(state_dict, strict=False)
             metrics = get_metrics(class_count=2, criterion=criterion)
             test_transform = get_transform(
                 mean=config["img_mean"], std=config["img_rescale"]
@@ -326,19 +331,19 @@ def run(
 def get_dataflow(config):
     # - Get train/test datasets
     with idist.one_rank_first(local=True):
-        test_dataset = get_test_datasets(
+        train_dataset, test_dataset = get_train_test_datasets(
             config["data_path"], csv_paths=config["csv_paths"]
         )
 
     # Setup data loader also adapted to distributed config: nccl, gloo, xla-tpu
-    # train_loader = idist.auto_dataloader(
-    #     train_dataset,
-    #     batch_size=config["batch_size"],
-    #     num_workers=config["num_workers"],
-    #     shuffle=True,
-    #     drop_last=True,
-    #     pin_memory=True,
-    # )
+    train_loader = idist.auto_dataloader(
+        train_dataset,
+        batch_size=config["batch_size"],
+        num_workers=config["num_workers"],
+        shuffle=True,
+        drop_last=True,
+        pin_memory=True,
+    )
 
     test_loader = idist.auto_dataloader(
         test_dataset,
@@ -347,7 +352,7 @@ def get_dataflow(config):
         shuffle=False,
         pin_memory=True,
     )
-    return test_loader
+    return train_loader, test_loader
 
 
 def initialize(config):

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 3090-4-quan-8
+  name: 3090-5-quan-4
 spec:
   ttlSecondsAfterFinished: 0
   template:
@@ -24,6 +24,8 @@ spec:
           unzip SCRIPTS.zip &&
           unzip MODEL.zip &&
           unzip quantized_loss_landscape &&
+          export PYTHONPATH=/root:$PYTHONPATH &&
+          python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 4 --data_path /pvc/ --csv_paths '{"train": "/pvc/5/train_noisy.csv", "test": "/pvc/5/test_noisy.csv"}' >> 4_5.txt 2>&1 &&
           sleep 360000
         volumeMounts:
         - mountPath: /pvc
