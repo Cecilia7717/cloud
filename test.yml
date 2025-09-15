@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 3090-2-quan-8
+  name: test-q2-n2
 spec:
   ttlSecondsAfterFinished: 0
   template:
@@ -16,6 +16,7 @@ spec:
           wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf' &&
           wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr' &&
           pip install gdown &&
+          gdown 'https://drive.google.com/uc?id=1FCdMXhDmUG-0A2elPbVM8qbyOXyZUgtJ' -O test_multi.bash &&
           gdown 1GfZ8m516QhZtTrmFFGwHY844RiS9iVjv -O quantized_loss_landscape.zip &&
           conda install -y -c conda-forge onnxoptimizer==0.3.13 onnx==1.15.0 &&
           apt-get update && apt-get install -y unzip &&
@@ -25,7 +26,8 @@ spec:
           unzip MODEL.zip &&
           unzip quantized_loss_landscape &&
           export PYTHONPATH=/root:$PYTHONPATH &&
-          python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 8 --data_path /pvc/ --csv_paths '{"train": "/pvc/2/train_noisy.csv", "test": "/pvc/2/test_noisy.csv"}' >> 8_2.txt 2>&1 &&
+          chmod +x test_multi.bash &&
+          ./test_multi.bash &&          
           sleep 360000
         volumeMounts:
         - mountPath: /pvc

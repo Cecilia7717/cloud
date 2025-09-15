@@ -1,0 +1,49 @@
+/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+Traceback (most recent call last):
+  File "/SCRIPTS/test.py", line 17, in <module>
+    from utils.utils import get_transform, get_metrics, get_train_test_datasets, get_test_datasets, get_model
+  File "/SCRIPTS/utils/utils.py", line 15, in <module>
+    from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
+ModuleNotFoundError: No module named 'MODEL'
+/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+2025-09-09 03:08:41,020 ignite.distributed.launcher.Parallel INFO: Initialized processing group with backend: 'nccl'
+2025-09-09 03:08:41,020 ignite.distributed.launcher.Parallel INFO: - Run '<function test_only.<locals>._eval_only at 0x7fdda7397880>' in 1 processes
+2025-09-09 03:08:42,247 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 28, 'num_workers': 8, 'shuffle': True, 'drop_last': True, 'pin_memory': True}
+/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+2025-09-09 03:08:42,248 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
+/SCRIPTS/test.py:80: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(config["resume_from"], map_location="cpu")
+start train test
+done get train test datasets
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+/opt/conda/lib/python3.12/site-packages/torch/_tensor.py:1413: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at ../c10/core/TensorImpl.h:1925.)
+  return super().rename(names)
+/opt/conda/lib/python3.12/site-packages/torch/nn/modules/conv.py:454: UserWarning: Defining your `__torch_function__` as a plain method is deprecated and will be an error in future, please define it as a classmethod. (Triggered internally at ../torch/csrc/utils/python_arg_parser.cpp:294.)
+  return F.conv2d(input, weight, bias, self.stride,
+2025-09-09 03:30:09,881 ignite.distributed.launcher.Parallel INFO: End of run
+2025-09-09 03:30:09,881 ignite.distributed.launcher.Parallel INFO: Finalized processing group with backend: 'nccl'
+=== Test Metrics ===
+Precision: tensor([0.9032, 0.8014], dtype=torch.float64)
+Recall: tensor([0.9494, 0.6672], dtype=torch.float64)
+F1: tensor([0.9257, 0.7282], dtype=torch.float64)
+Loss: 0.476107981693576
