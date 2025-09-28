@@ -1,57 +1,13 @@
 /opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
   from torch.distributed.optim import ZeroRedundancyOptimizer
-Traceback (most recent call last):
-  File "/SCRIPTS/test.py", line 557, in <module>
-    fire.Fire({"run": run,
-  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 135, in Fire
-    component_trace = _Fire(component, args, parsed_flag_args, context, name)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 468, in _Fire
-    component, remaining_args = _CallAndUpdateTrace(
-                                ^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 684, in _CallAndUpdateTrace
-    component = fn(*varargs, **kwargs)
-                ^^^^^^^^^^^^^^^^^^^^^^
-  File "/SCRIPTS/test.py", line 65, in test_only
-    with idist.Parallel(backend="nccl" if torch.cuda.is_available() else "gloo") as parallel:
-  File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/launcher.py", line 322, in __enter__
-    idist.initialize(self.backend, init_method=self.init_method)
-  File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/utils.py", line 577, in initialize
-    _set_model(comp_model_cls(backend, **kwargs))
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/comp_models/native.py", line 92, in __init__
-    self._create_from_backend(
-  File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/comp_models/native.py", line 124, in _create_from_backend
-    dist.init_process_group(backend, init_method=init_method, **init_pg_kwargs)
-  File "/opt/conda/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 79, in wrapper
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 93, in wrapper
-    func_return = func(*args, **kwargs)
-                  ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 1361, in init_process_group
-    store, rank, world_size = next(rendezvous_iterator)
-                              ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/torch/distributed/rendezvous.py", line 258, in _env_rendezvous_handler
-    store = _create_c10d_store(master_addr, master_port, rank, world_size, timeout, use_libuv)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/site-packages/torch/distributed/rendezvous.py", line 185, in _create_c10d_store
-    return TCPStore(
-           ^^^^^^^^^
-RuntimeError: The server socket has failed to listen on any local network address. useIpv6: 0, code: -98, name: EADDRINUSE, message: address already in use
-/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
-  from torch.distributed.optim import ZeroRedundancyOptimizer
-2025-09-09 01:12:48,223 ignite.distributed.launcher.Parallel INFO: Initialized processing group with backend: 'nccl'
-2025-09-09 01:12:48,224 ignite.distributed.launcher.Parallel INFO: - Run '<function test_only.<locals>._eval_only at 0x7f11f4ba3880>' in 1 processes
-2025-09-09 01:12:48,248 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
-	{'batch_size': 28, 'num_workers': 8, 'shuffle': True, 'drop_last': True, 'pin_memory': True}
+2025-09-27 23:37:10,935 ignite.distributed.launcher.Parallel INFO: Initialized processing group with backend: 'nccl'
+2025-09-27 23:37:10,935 ignite.distributed.launcher.Parallel INFO: - Run '<function test_only.<locals>._eval_only at 0x75945eca2e80>' in 1 processes
+2025-09-27 23:37:11,284 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
 /opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   warnings.warn(_create_warning_msg(
-2025-09-09 01:12:48,249 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
-	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
-/SCRIPTS/test.py:80: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+/SCRIPTS/test.py:77: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
   ckpt = torch.load(config["resume_from"], map_location="cpu")
-start train test
 done get train test datasets
 /opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
   dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
@@ -73,10 +29,10 @@ done get train test datasets
   return super().rename(names)
 /opt/conda/lib/python3.12/site-packages/torch/nn/modules/conv.py:454: UserWarning: Defining your `__torch_function__` as a plain method is deprecated and will be an error in future, please define it as a classmethod. (Triggered internally at ../torch/csrc/utils/python_arg_parser.cpp:294.)
   return F.conv2d(input, weight, bias, self.stride,
-2025-09-09 01:35:15,564 ignite.distributed.launcher.Parallel INFO: End of run
-2025-09-09 01:35:15,564 ignite.distributed.launcher.Parallel INFO: Finalized processing group with backend: 'nccl'
+2025-09-27 23:38:42,421 ignite.distributed.launcher.Parallel INFO: End of run
+2025-09-27 23:38:42,421 ignite.distributed.launcher.Parallel INFO: Finalized processing group with backend: 'nccl'
 === Test Metrics ===
-Precision: tensor([0.9032, 0.8014], dtype=torch.float64)
-Recall: tensor([0.9494, 0.6672], dtype=torch.float64)
-F1: tensor([0.9257, 0.7282], dtype=torch.float64)
-Loss: 0.4761050288288738
+Precision: tensor([0.9108, 0.7688], dtype=torch.float64)
+Recall: tensor([0.9356, 0.7006], dtype=torch.float64)
+F1: tensor([0.9230, 0.7332], dtype=torch.float64)
+Loss: 0.19626231957439524

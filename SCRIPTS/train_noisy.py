@@ -67,7 +67,7 @@ def training(local_rank, config):
   
 def run(
     seed: int = 23456,
-    noise_adder: Noise=Noise.add_gaussian_noise,
+    noise_adder: Noise=Noise.add_salt_and_pepper_noise,
     noise_module: float=2.0, # percentage
     data_path: str = "/data",
     csv_paths: dict = {
@@ -147,7 +147,11 @@ def run(
     with idist.Parallel(backend=backend, **spawn_kwargs) as parallel:
         parallel.run(training, config)
 
-def save_noisy_dataset(clean_ds, new_csv_path, noise_adder, noise_module, seed=None, save_root = './'):
+import os
+import torch
+import pandas as pd
+
+def save_noisy_dataset(clean_ds, new_csv_path, noise_adder, noise_module, seed=None, save_root="./"):
     os.makedirs(save_root, exist_ok=True)
     records = []
     print(f"Start Noisy dataset save:\n  Images → {save_root}\n  CSV → {new_csv_path}\n  noise_adder={str(noise_adder)}")
@@ -156,24 +160,65 @@ def save_noisy_dataset(clean_ds, new_csv_path, noise_adder, noise_module, seed=N
         img, target = clean_ds[idx]   # clean image + mask target
         row = clean_ds.csv.iloc[idx]  # original CSV row
 
+        # get original filename without "_mask"
+        in_path = row["in"]   # e.g., "train/S2A_xxx.tif"
+        out_path = row["out"] # e.g., "train/S2A_xxx_mask.tif"
+        base_name = os.path.basename(in_path)  # e.g., "S2A_xxx.tif"
+
         # apply noise
         if seed is not None:
             Noise.set_seed(seed)
         noisy_img = noise_adder(img, percentage=noise_module)
         noisy_img = torch.clamp(torch.tensor(noisy_img, dtype=torch.float32), 0, noisy_img.max())
 
-        # save noisy image
-        noisy_in_name = f"noisy_{idx}.tif"
-        noisy_in_path = os.path.join(save_root, noisy_in_name)
+        # save noisy image using the SAME basename
+        noisy_in_path = os.path.join(save_root, base_name)
         save_tiff(noisy_img, noisy_in_path)
 
-        # keep original mask reference (or copy mask too if desired)
-        records.append({"in": os.path.join(os.path.basename(save_root), noisy_in_name),
-                        "out": row["out"]})
+        # keep mask filename unchanged (copy mask separately if needed)
+        mask_name = os.path.basename(out_path)
+        noisy_out_path = os.path.join(save_root, mask_name)
+
+        # if you want to also copy the original mask into the new folder:
+        if not os.path.exists(noisy_out_path):
+            os.system(f"cp {out_path} {noisy_out_path}")
+
+        # record for CSV
+        records.append({"in": os.path.join(os.path.basename(save_root), base_name),
+                        "out": os.path.join(os.path.basename(save_root), mask_name)})
 
     # write new CSV
     pd.DataFrame(records).to_csv(new_csv_path, index=False)
     print(f"✅ Noisy dataset saved:\n  Images → {save_root}\n  CSV → {new_csv_path}")
+
+
+# def save_noisy_dataset(clean_ds, new_csv_path, noise_adder, noise_module, seed=None, save_root = './'):
+#     os.makedirs(save_root, exist_ok=True)
+#     records = []
+#     print(f"Start Noisy dataset save:\n  Images → {save_root}\n  CSV → {new_csv_path}\n  noise_adder={str(noise_adder)}")
+
+#     for idx in range(len(clean_ds)):
+#         img, target = clean_ds[idx]   # clean image + mask target
+#         row = clean_ds.csv.iloc[idx]  # original CSV row
+
+#         # apply noise
+#         if seed is not None:
+#             Noise.set_seed(seed)
+#         noisy_img = noise_adder(img, percentage=noise_module)
+#         noisy_img = torch.clamp(torch.tensor(noisy_img, dtype=torch.float32), 0, noisy_img.max())
+
+#         # save noisy image
+#         noisy_in_name = f"noisy_{idx}.tif"
+#         noisy_in_path = os.path.join(save_root, noisy_in_name)
+#         save_tiff(noisy_img, noisy_in_path)
+
+#         # keep original mask reference (or copy mask too if desired)
+#         records.append({"in": os.path.join(os.path.basename(save_root), noisy_in_name),
+#                         "out": row["out"]})
+
+#     # write new CSV
+#     pd.DataFrame(records).to_csv(new_csv_path, index=False)
+#     print(f"✅ Noisy dataset saved:\n  Images → {save_root}\n  CSV → {new_csv_path}")
 
 def get_dataflow(config):
     # - Get train/test datasets
