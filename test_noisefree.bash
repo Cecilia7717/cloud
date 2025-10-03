@@ -5,6 +5,16 @@ export MASTER_ADDR=localhost
 export MASTER_PORT=29600
 export PYTHONPATH=/root:$PYTHONPATH
 
+python /SCRIPTS/test.py test-only \
+    --model ags_tiny_unet_50k \
+    --seed 23456 \
+    --quant_config 2 \
+    --data_path /pvc/ \
+    --csv_paths "/pvc/valid_noisy.csv" \
+    --resume_from="/pvc/output-alcd-cloud-quan-2-23456/ags_tiny_unet_50k_backend-None-1_20250818-182321/best_model_78_test_F1=0.8281.pt" \
+    >> result_test_quan_2_noise_0.txt 2>&1
+
+cp result_test_quan_2_noise_0.txt /pvc/result_test_quan_2_noise_0.txt
 
 python /SCRIPTS/test.py test-only \
     --model ags_tiny_unet_50k \
