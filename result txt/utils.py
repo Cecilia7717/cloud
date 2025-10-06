@@ -163,20 +163,20 @@ def load_onnx_model(onnx_model_path):
 
 
 def get_model(name, quant_config=None):
-    if name.lower() == "ags_tiny_unet_100k":
-        model = load_onnx_model(
-            "MODEL/onnx_models_ref/ags_tiny_unet_100k.onnx"
-        )
-        # model = load_onnx_model("./MODEL/ags_tiny_unet_100k.onnx")
-    elif name.lower() == "ags_tiny_unet_50k":
-        model = load_onnx_model(
-            "MODEL/onnx_models_ref/ags_tiny_unet_50k.onnx"
-        )
-        # model = load_onnx_model("./MODEL/ags_tiny_unet_50k.onnx")
-    else:
-        raise ValueError(
-            f"{name=}, should be `ags_tiny_unet_100k` or `ags_tiny_unet_50k`"
-        )
+    # if name.lower() == "ags_tiny_unet_100k":
+    #     model = load_onnx_model(
+    #         "MODEL/onnx_models_ref/ags_tiny_unet_100k.onnx"
+    #     )
+    #     # model = load_onnx_model("./MODEL/ags_tiny_unet_100k.onnx")
+    # elif name.lower() == "ags_tiny_unet_50k":
+    #     model = load_onnx_model(
+    #         "MODEL/onnx_models_ref/ags_tiny_unet_50k.onnx"
+    #     )
+    #     # model = load_onnx_model("./MODEL/ags_tiny_unet_50k.onnx")
+    # else:
+    #     raise ValueError(
+    #         f"{name=}, should be `ags_tiny_unet_100k` or `ags_tiny_unet_50k`"
+    #     )
 
     if quant_config is not None:
         if name.lower() == "ags_tiny_unet_100k":
@@ -188,4 +188,7 @@ def get_model(name, quant_config=None):
                 f"{name=}, should be `ags_tiny_unet_100k` or `ags_tiny_unet_50k`"
             )
         # model = quant_model(quant_config, model)
+    checkpoint = torch.load(checkpoint_fp, map_location=device)  # or "cuda" if you want GPU
+    model.load_state_dict(checkpoint["model_state_dict"] if "model_state_dict" in checkpoint else checkpoint, strict=False)
+    # load the best float checkpoint outside of this function
     return model

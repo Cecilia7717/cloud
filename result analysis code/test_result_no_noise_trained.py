@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Directory containing result files
-data_dir = "/Users/chenzhuo/Documents/cloud/result txt"
+data_dir = "/Users/cc/Documents/cloud/result analysis code/cloud/result txt"
 
 # Parameters
 quans = [2, 4, 6, 8]
@@ -19,10 +19,7 @@ results = np.full((len(noises), len(quans)), np.nan)
 # Collect data
 for i, noise in enumerate(noises):
     for j, quan in enumerate(quans):
-        if noise == 0:
-            filename = f"result_test_quan_{quan}_noise_{noise}.txt"
-        else:
-            filename = f"result_test_quan_{quan}_noise_{noise}_sap.txt"
+        filename = f"result_test_{quan}_{noise}_sap.txt"
         filepath = os.path.join(data_dir, filename)
 
         if not os.path.exists(filepath):
@@ -48,7 +45,7 @@ im = plt.imshow(results, cmap="viridis", aspect="auto",
 plt.xticks(range(len(quans)), quans)
 plt.yticks(range(len(noises)), noises)
 plt.xlabel("Quantization Bit Width")
-plt.ylabel("Salt and Pepper Noise Level")
+plt.ylabel("sap Noise Level")
 plt.title("Loss Heatmap")
 
 # Colorbar
@@ -63,5 +60,5 @@ for i in range(len(noises)):
                      ha="center", va="center", color="w")
 
 plt.tight_layout()
-plt.savefig("/Users/chenzhuo/Documents/cloud/result plot/heatmap loss noisefree trained salt and pepper", dpi=300)
+plt.savefig("/Users/cc/Documents/cloud/result plot/heatmap loss noisefree trained sap", dpi=300)
 plt.show()
