@@ -51,7 +51,7 @@ def test_only(local_rank, config):
         logger.info(f"Resuming from checkpoint: {checkpoint_fp}")
 
         # Initialize the model
-        model = UNetModel50K_quan()  
+        model = UNetModel50K_quan(bit=config.quant_config)  
         model = idist.auto_model(model)
 
         # Load checkpoint (assume it's a state_dict)
