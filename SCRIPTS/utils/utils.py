@@ -163,20 +163,20 @@ def load_onnx_model(onnx_model_path):
 
 
 def get_model(name, quant_config=None):
-    if name.lower() == "ags_tiny_unet_100k":
-        model = load_onnx_model(
-            "MODEL/onnx_models_ref/ags_tiny_unet_100k.onnx"
-        )
-        # model = load_onnx_model("./MODEL/ags_tiny_unet_100k.onnx")
-    elif name.lower() == "ags_tiny_unet_50k":
-        model = load_onnx_model(
-            "MODEL/onnx_models_ref/ags_tiny_unet_50k.onnx"
-        )
-        # model = load_onnx_model("./MODEL/ags_tiny_unet_50k.onnx")
-    else:
-        raise ValueError(
-            f"{name=}, should be `ags_tiny_unet_100k` or `ags_tiny_unet_50k`"
-        )
+    # if name.lower() == "ags_tiny_unet_100k":
+    #     model = load_onnx_model(
+    #         "MODEL/onnx_models_ref/ags_tiny_unet_100k.onnx"
+    #     )
+    #     # model = load_onnx_model("./MODEL/ags_tiny_unet_100k.onnx")
+    # elif name.lower() == "ags_tiny_unet_50k":
+    #     model = load_onnx_model(
+    #         "MODEL/onnx_models_ref/ags_tiny_unet_50k.onnx"
+    #     )
+    #     # model = load_onnx_model("./MODEL/ags_tiny_unet_50k.onnx")
+    # else:
+    #     raise ValueError(
+    #         f"{name=}, should be `ags_tiny_unet_100k` or `ags_tiny_unet_50k`"
+    #     )
 
     if quant_config is not None:
         if name.lower() == "ags_tiny_unet_100k":
