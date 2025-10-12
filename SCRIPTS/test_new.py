@@ -6,7 +6,7 @@ from typing import (
     List,
     Optional,
 )
-
+from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan
 import fire
 import numpy as np
 import ignite
@@ -49,7 +49,24 @@ def test_only(local_rank, config):
     if config.get("resume_from", None):
         checkpoint_fp = config["resume_from"]
         logger.info(f"Resuming from checkpoint: {checkpoint_fp}")
-        checkpoint = torch.load(checkpoint_fp, map_location=device)
+
+        # Initialize the model
+        model = UNetModel50K_quan(bit=config.quant_config)  
+        model = idist.auto_model(model)
+
+        # Load checkpoint (assume it's a state_dict)
+        # checkpoint = torch.load(checkpoint_fp, map_location=device)
+        # if "model" in checkpoint:
+        #     model.load_state_dict(checkpoint["model"], strict=False)
+        # else:
+        #     model.load_state_dict(checkpoint, strict=False)
+        checkpoint = torch.load(checkpoint_fp, map_location=device)  # or "cuda" if you want GPU
+        model.load_state_dict(checkpoint["model_state_dict"] if "model_state_dict" in checkpoint else checkpoint, strict=False)
+        # print(f"model_state_dict:{"model_state_dict" in checkpoint}")
+        # print(f"model_state_dict:{"model" in checkpoint}")
+        # false false
+        model.to(device)
+        model.eval()
     else:
         raise ValueError("No checkpoint provided in config['resume_from'].")
 
@@ -61,7 +78,7 @@ def test_only(local_rank, config):
     # Define metrics and evaluator
     class_count = 2
     metrics = get_metrics(class_count=class_count, criterion=criterion)
-    evaluator = create_evaluator(checkpoint, test_transform, metrics=metrics, config=config)
+    evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
 
     # Run evaluation on test set
     state = evaluator.run(test_loader)

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: test-q2-n2
+  name: test
 spec:
   ttlSecondsAfterFinished: 0
   template:
@@ -26,7 +26,6 @@ spec:
           unzip MODEL.zip &&
           unzip quantized_loss_landscape &&
           export PYTHONPATH=/root:$PYTHONPATH &&
-
           sleep 360000
         volumeMounts:
         - mountPath: /pvc
