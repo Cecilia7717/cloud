@@ -119,7 +119,10 @@ def training(local_rank, config):
     in_channels = 3
     best_model_handler_qonnx_export = CheckpointQONNX(
         {
+            "trainer": trainer,
             "model": model,
+            "optimizer": optimizer,
+            "lr_scheduler": lr_scheduler,
             "model_suffix": "",  ##can be "_student" here for distillation
             "model_shape": torch.tensor(
                 [
@@ -146,7 +149,7 @@ def training(local_rank, config):
 
     # Best model save Handler
     best_model_handler = Checkpoint(
-        {"model": model},
+        {"model": model, "trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler},
         get_save_handler(config),
         filename_prefix="best",
         n_saved=2,

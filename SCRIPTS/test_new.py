@@ -6,7 +6,7 @@ from typing import (
     List,
     Optional,
 )
-from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan
+
 import fire
 import numpy as np
 import ignite
@@ -14,7 +14,7 @@ import ignite.distributed as idist
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from utils.utils import get_transform, get_metrics, get_train_test_datasets, get_test_datasets, get_model
+from utils.utils import get_transform, get_metrics, get_train_test_datasets, get_model
 from ignite.contrib.engines import common
 from ignite.engine import Engine, Events
 from ignite.handlers import (
@@ -32,88 +32,173 @@ from utils.loss import TrainingLoss
 from torchvision import tv_tensors
 
 
-def test_only(local_rank, config):
+def training(local_rank, config):
     rank = idist.get_rank()
+    manual_seed(config["seed"] + rank)
     device = idist.device()
 
-    logger = setup_logger(name="ALCD_CLOUD_TEST")
+    logger = setup_logger(name="ALCD_CLOUD")
+
     log_basic_info(logger, config)
 
-    # Setup dataflow (we only need test_loader here)
-    _, test_loader = get_dataflow(config)
+    output_path = config["output_path"]
+    if rank == 0:
+        if config["stop_iteration"] is None:
+            now = datetime.now().strftime("%Y%m%d-%H%M%S")
+        else:
+            now = f"stop-on-{config['stop_iteration']}"
 
-    # Initialize model, optimizer, criterion, scheduler (same as training)
+        folder_name = f"{config['model']}_backend-{idist.backend()}-{idist.get_world_size()}_{now}"
+        output_path = Path(output_path) / folder_name
+        if not output_path.exists():
+            output_path.mkdir(parents=True)
+        config["output_path"] = output_path.as_posix()
+        logger.info(f"Output path: {config['output_path']}")
+
+        if "cuda" in device.type:
+            config["cuda device name"] = torch.cuda.get_device_name(local_rank)
+
+    # Setup dataflow, model, optimizer, criterion
+    train_loader, test_loader = get_dataflow(config)
+
+    config["num_iters_per_epoch"] = len(train_loader)
     model, optimizer, criterion, lr_scheduler = initialize(config)
 
-    # Load checkpoint if resume_from is provided
-    if config.get("resume_from", None):
-        checkpoint_fp = config["resume_from"]
-        logger.info(f"Resuming from checkpoint: {checkpoint_fp}")
-
-        # Initialize the model
-        model = UNetModel50K_quan(bit=config.quant_config)  
-        model = idist.auto_model(model)
-
-        # Load checkpoint (assume it's a state_dict)
-        # checkpoint = torch.load(checkpoint_fp, map_location=device)
-        # if "model" in checkpoint:
-        #     model.load_state_dict(checkpoint["model"], strict=False)
-        # else:
-        #     model.load_state_dict(checkpoint, strict=False)
-        checkpoint = torch.load(checkpoint_fp, map_location=device)  # or "cuda" if you want GPU
-        model.load_state_dict(checkpoint["model_state_dict"] if "model_state_dict" in checkpoint else checkpoint, strict=False)
-        # print(f"model_state_dict:{"model_state_dict" in checkpoint}")
-        # print(f"model_state_dict:{"model" in checkpoint}")
-        # false false
-        model.to(device)
-        model.eval()
-    else:
-        raise ValueError("No checkpoint provided in config['resume_from'].")
-
-    # Get test transform
-    _, test_transform = get_transform(
+    # get transformations
+    train_transform, test_transform = get_transform(
         mean=config["img_mean"], std=config["img_rescale"]
     )
 
-    # Define metrics and evaluator
+    # Create trainer for current task
+    model = create_trainer(
+        model,
+        train_transform,
+        optimizer,
+        criterion,
+        lr_scheduler,
+        train_loader.sampler,
+        config,
+        logger,
+    )
+
+    # Let's now setup evaluator engine to perform model's validation and compute metrics
     class_count = 2
     metrics = get_metrics(class_count=class_count, criterion=criterion)
+
+    # We define two evaluators as they wont have exactly similar roles:
+    # - `evaluator` will save the best model based on validation score
     evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
+    train_evaluator = create_evaluator(
+        model, test_transform, metrics=metrics, config=config
+    )
 
-    # Run evaluation on test set
+    # def run_validation(engine):
+    #     # epoch = trainer.state.epoch
+    #     # state = train_evaluator.run(train_loader)
+    #     # log_metrics(logger, epoch, state.times["COMPLETED"], "Train", state.metrics)
     state = evaluator.run(test_loader)
+    log_metrics(logger, 00, state.times["COMPLETED"], "Test", state.metrics)
 
-    # Log and return results
-    log_metrics(logger, 0, state.times["COMPLETED"], "Test", state.metrics)
+    # trainer.add_event_handler(
+    #     Events.EPOCH_COMPLETED(every=config["validate_every"]) | Events.COMPLETED,
+    #     run_validation,
+    # )
 
-    if rank == 0:
-        logger.info("=== Final Test Results ===")
-        for name, value in state.metrics.items():
-            logger.info(f"{name}: {value}")
+    # if rank == 0:
+    #     # Setup TensorBoard logging on trainer and evaluators. Logged values are:
+    #     #  - Training metrics, e.g. running average loss values
+    #     #  - Learning rate
+    #     #  - Evaluation train/test metrics
+    #     evaluators = {"training": train_evaluator, "test": evaluator}
+    #     tb_logger = common.setup_tb_logging(
+    #         output_path, trainer, optimizer, evaluators=evaluators
+    #     )
 
-    return state.metrics
+    # # Store 2 best models by validation accuracy starting from num_epochs / 2:
+    # # Best model save Handler ONNX
+    # in_channels = 3
+    # best_model_handler_qonnx_export = CheckpointQONNX(
+    #     {
+    #         "model": model,
+    #         "model_suffix": "",  ##can be "_student" here for distillation
+    #         "model_shape": torch.tensor(
+    #             [
+    #                 1,
+    #                 in_channels,
+    #                 config["input_size"][0],
+    #                 config["input_size"][1],
+    #             ]
+    #         ),
+    #     },
+    #     getSaveHandlerQONNX(config),
+    #     filename_prefix="best",
+    #     n_saved=2,
+    #     global_step_transform=global_step_from_engine(trainer),
+    #     score_name="test_F1",
+    #     score_function=lambda _: np.mean(
+    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
+    #     ),
+    # )
+    # evaluator.add_event_handler(
+    #     Events.COMPLETED(every=1),
+    #     best_model_handler_qonnx_export,
+    # )
+
+    # # Best model save Handler
+    # best_model_handler = Checkpoint(
+    #     {"model": model},
+    #     get_save_handler(config),
+    #     filename_prefix="best",
+    #     n_saved=2,
+    #     global_step_transform=global_step_from_engine(trainer),
+    #     score_name="test_F1",
+    #     score_function=lambda _: np.mean(
+    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
+    #     ),
+    # )
+    # evaluator.add_event_handler(
+    #     Events.COMPLETED(every=1),
+    #     best_model_handler,
+    # )
+
+    # # In order to check training resuming we can stop training on a given iteration
+    # if config["stop_iteration"] is not None:
+
+    #     @trainer.on(Events.ITERATION_STARTED(once=config["stop_iteration"]))
+    #     def _():
+    #         logger.info(f"Stop training on {trainer.state.iteration} iteration")
+    #         trainer.terminate()
+
+    # try:
+    #     trainer.run(train_loader, max_epochs=config["num_epochs"])
+    # except Exception as e:
+    #     logger.exception("")
+    #     raise e
+
+    # if rank == 0:
+    #     tb_logger.close()
 
 
 def run(
     seed: int = 12345,
-    data_path: str = "pvc/",
+    data_path: str = "/data",
     csv_paths: dict = {
         "train": "/pvc/train.csv",
         "test": "/pvc/valid.csv",
     },
-    output_path: str = "./output-alcd-cloud/",
+    output_path: str = "./output-alcd-cloud-noisy/",
     input_size=(512, 512),
-    img_mean: List[float] = [0.0, 0, 0.0],
+    img_mean: List[float] = [0.0, 0.0, 0.0],
     img_rescale: List[float] = [8657.0, 8657.0, 8657.0],
     model: str = "ags_tiny_unet_100k",
-    quant_config: str = None,
+    quant_config: int = 8,# str="8bit_fix", # str = None,
     class_weights: List[float] = [0.1, 0.9],
     batch_size: int = 28,
     weight_decay: float = 2e-4,
     num_workers: int = 8,
-    num_epochs: int = 100, #1000
+    num_epochs: int = 2,
     learning_rate: float = 1e-3,
-    num_warmup_epochs: int = 5,
+    num_warmup_epochs: int = 1,
     validate_every: int = 3,
     checkpoint_every: int = 1000,
     backend: Optional[str] = None,
@@ -172,7 +257,8 @@ def run(
         raise RuntimeError("The value of with_amp should be False if backend is xla")
 
     with idist.Parallel(backend=backend, **spawn_kwargs) as parallel:
-        parallel.run(test_only, config)
+        parallel.run(training, config)
+
 
 def get_dataflow(config):
     # - Get train/test datasets
@@ -200,38 +286,29 @@ def get_dataflow(config):
     )
     return train_loader, test_loader
 
-def get_test_dataflow(config):
-    # - Get train/test datasets
-    with idist.one_rank_first(local=True):
-        test_dataset = get_test_datasets(
-            config["data_path"], csv_paths=config["csv_paths"]
-        )
 
-    test_loader = idist.auto_dataloader(
-        test_dataset,
-        batch_size=2 * config["batch_size"],
-        num_workers=config["num_workers"],
-        shuffle=False,
-        pin_memory=True,
-    )
-    return test_loader
-
-
-def initialize(config, train_loader=None):
-    # Model
-    model = get_model(config["model"], quant_config=config["quant_config"])
+def initialize(config):
+    model = get_model(config["model"], config["quant_config"])
+    # Adapt model for distributed settings if configured
     model = idist.auto_model(model)
 
-    # Criterion
-    criterion = nn.CrossEntropyLoss(weight=torch.tensor(config["class_weights"]).to(idist.device()))
+    optimizer = optim.Adam(
+        model.parameters(),
+        lr=config["learning_rate"],
+        weight_decay=config["weight_decay"],
+    )
+    optimizer = idist.auto_optim(optimizer)
+    criterion = TrainingLoss(config["class_weights"]).to(idist.device())
 
-    optimizer, lr_scheduler = None, None
-    if train_loader is not None:  # training mode
-        optimizer = torch.optim.Adam(model.parameters())
-        steps_per_epoch = len(train_loader)
-        lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=config["num_epochs"] * steps_per_epoch
-        )
+    le = config["num_iters_per_epoch"]
+    milestones_values = [
+        (0, 0.0),
+        (le * config["num_warmup_epochs"], config["learning_rate"]),
+        (le * config["num_epochs"], 0.0),
+    ]
+    lr_scheduler = PiecewiseLinear(
+        optimizer, param_name="lr", milestones_values=milestones_values
+    )
 
     return model, optimizer, criterion, lr_scheduler
 
@@ -353,16 +430,25 @@ def create_trainer(
     resume_from = config["resume_from"]
     if resume_from is not None:
         checkpoint_fp = Path(resume_from)
-        assert (
-            checkpoint_fp.exists()
-        ), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
-        logger.info(f"Resume from a checkpoint: {checkpoint_fp.as_posix()}")
-        checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
-        model.load_state_dict(checkpoint["model"], strict=False)
-        to_save = {"trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler}
-        Checkpoint.load_objects(to_load=to_save, checkpoint=checkpoint)
+        assert checkpoint_fp.exists(), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
+        logger.info(f"Resuming from checkpoint: {checkpoint_fp.as_posix()}")
 
-    return trainer
+        # Load checkpoint file
+        checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
+
+        # If checkpoint contains "model_state_dict", extract it; otherwise assume it's just weights
+        state_dict = checkpoint["model_state_dict"] if "model_state_dict" in checkpoint else checkpoint
+        missing, unexpected = model.load_state_dict(state_dict, strict=False)
+        if missing or unexpected:
+            logger.warning(f"Missing keys: {missing}, Unexpected keys: {unexpected}")
+
+        # Optional: if you saved optimizer state separately
+        if "optimizer_state_dict" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        if "lr_scheduler_state_dict" in checkpoint:
+            lr_scheduler.load_state_dict(checkpoint["lr_scheduler_state_dict"])
+
+    return model
 
 
 def create_evaluator(model, transform, metrics, config, tag="val"):

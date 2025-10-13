@@ -1,0 +1,162 @@
+/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+2025-09-28 16:26:35,301 ignite.distributed.launcher.Parallel INFO: Initialized processing group with backend: 'nccl'
+2025-09-28 16:26:35,302 ignite.distributed.launcher.Parallel INFO: - Run '<function test_only.<locals>._eval_only at 0x79395d28f380>' in 1 processes
+2025-09-28 16:26:35,475 ignite.distributed.auto.auto_dataloader INFO: Use data loader kwargs for dataset '<utils.utils.ALCDDat': 
+	{'batch_size': 56, 'num_workers': 8, 'shuffle': False, 'pin_memory': True}
+/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 8 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/SCRIPTS/test.py:77: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(config["resume_from"], map_location="cpu")
+done get train test datasets
+Current run is terminating due to exception: Caught RasterioIOError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "rasterio/_base.pyx", line 310, in rasterio._base.DatasetBase.__init__
+  File "rasterio/_base.pyx", line 221, in rasterio._base.open_dataset
+  File "rasterio/_err.pyx", line 359, in rasterio._err.exc_wrap_pointer
+rasterio._err.CPLE_OpenFailedError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/worker.py", line 309, in _worker_loop
+    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "/SCRIPTS/utils/utils.py", line 129, in __getitem__
+    img = read_tiff(img_path)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/SCRIPTS/utils/utils.py", line 80, in read_tiff
+    with rasterio.open(filepath, mode="r", crs=None, transform=None) as i_raster:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/rasterio/env.py", line 463, in wrapper
+    return f(*args, **kwds)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py", line 356, in open
+    dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "rasterio/_base.pyx", line 312, in rasterio._base.DatasetBase.__init__
+rasterio.errors.RasterioIOError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+Engine run is terminating due to exception: Caught RasterioIOError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "rasterio/_base.pyx", line 310, in rasterio._base.DatasetBase.__init__
+  File "rasterio/_base.pyx", line 221, in rasterio._base.open_dataset
+  File "rasterio/_err.pyx", line 359, in rasterio._err.exc_wrap_pointer
+rasterio._err.CPLE_OpenFailedError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/worker.py", line 309, in _worker_loop
+    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "/SCRIPTS/utils/utils.py", line 129, in __getitem__
+    img = read_tiff(img_path)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/SCRIPTS/utils/utils.py", line 80, in read_tiff
+    with rasterio.open(filepath, mode="r", crs=None, transform=None) as i_raster:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/rasterio/env.py", line 463, in wrapper
+    return f(*args, **kwds)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py", line 356, in open
+    dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "rasterio/_base.pyx", line 312, in rasterio._base.DatasetBase.__init__
+rasterio.errors.RasterioIOError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+2025-09-28 16:26:36,587 ignite.distributed.launcher.Parallel INFO: Finalized processing group with backend: 'nccl'
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/SCRIPTS/test.py", line 309, in <module>
+[rank0]:     fire.Fire({"test_only": test_only})
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 135, in Fire
+[rank0]:     component_trace = _Fire(component, args, parsed_flag_args, context, name)
+[rank0]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 468, in _Fire
+[rank0]:     component, remaining_args = _CallAndUpdateTrace(
+[rank0]:                                 ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 684, in _CallAndUpdateTrace
+[rank0]:     component = fn(*varargs, **kwargs)
+[rank0]:                 ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/SCRIPTS/test.py", line 97, in test_only
+[rank0]:     parallel.run(_eval_only, config)
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/launcher.py", line 316, in run
+[rank0]:     func(local_rank, *args, **kwargs)
+[rank0]:   File "/SCRIPTS/test.py", line 92, in _eval_only
+[rank0]:     state = evaluator.run(test_loader)
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 889, in run
+[rank0]:     return self._internal_run()
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 932, in _internal_run
+[rank0]:     return next(self._internal_run_generator)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 990, in _internal_run_as_gen
+[rank0]:     self._handle_exception(e)
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 644, in _handle_exception
+[rank0]:     raise e
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 956, in _internal_run_as_gen
+[rank0]:     epoch_time_taken += yield from self._run_once_on_dataset_as_gen()
+[rank0]:                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 1096, in _run_once_on_dataset_as_gen
+[rank0]:     self._handle_exception(e)
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 644, in _handle_exception
+[rank0]:     raise e
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/ignite/engine/engine.py", line 1033, in _run_once_on_dataset_as_gen
+[rank0]:     self.state.batch = next(self._dataloader_iter)
+[rank0]:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 630, in __next__
+[rank0]:     data = self._next_data()
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1344, in _next_data
+[rank0]:     return self._process_data(data)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1370, in _process_data
+[rank0]:     data.reraise()
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/_utils.py", line 706, in reraise
+[rank0]:     raise exception
+[rank0]: rasterio.errors.RasterioIOError: Caught RasterioIOError in DataLoader worker process 0.
+[rank0]: Original Traceback (most recent call last):
+[rank0]:   File "rasterio/_base.pyx", line 310, in rasterio._base.DatasetBase.__init__
+[rank0]:   File "rasterio/_base.pyx", line 221, in rasterio._base.open_dataset
+[rank0]:   File "rasterio/_err.pyx", line 359, in rasterio._err.exc_wrap_pointer
+[rank0]: rasterio._err.CPLE_OpenFailedError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+[rank0]: During handling of the above exception, another exception occurred:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/worker.py", line 309, in _worker_loop
+[rank0]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+[rank0]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank0]:             ~~~~~~~~~~~~^^^^^
+[rank0]:   File "/SCRIPTS/utils/utils.py", line 129, in __getitem__
+[rank0]:     img = read_tiff(img_path)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/SCRIPTS/utils/utils.py", line 80, in read_tiff
+[rank0]:     with rasterio.open(filepath, mode="r", crs=None, transform=None) as i_raster:
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/rasterio/env.py", line 463, in wrapper
+[rank0]:     return f(*args, **kwds)
+[rank0]:            ^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py", line 356, in open
+[rank0]:     dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "rasterio/_base.pyx", line 312, in rasterio._base.DatasetBase.__init__
+[rank0]: rasterio.errors.RasterioIOError: /pvc/test_noisy/S2A_MSIL1C_20180714T141051_N0206_R110_T21LWK_20180714T155753_16_8.tif: No such file or directory
+
+/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+Traceback (most recent call last):
+  File "/SCRIPTS/test.py", line 17, in <module>
+    from utils.utils import get_transform, get_metrics, get_train_test_datasets, get_test_datasets, get_model
+  File "/SCRIPTS/utils/utils.py", line 15, in <module>
+    from MODEL.pytorch_model_man.unet_model_quan import UNetModel50K_quan, UNetModel100k_quan
+ModuleNotFoundError: No module named 'MODEL'
