@@ -70,7 +70,7 @@ def training(local_rank, config):
     )
 
     # Create trainer for current task
-    model = create_trainer(
+    trainer = create_trainer(
         model,
         train_transform,
         optimizer,
@@ -92,91 +92,9 @@ def training(local_rank, config):
         model, test_transform, metrics=metrics, config=config
     )
 
-    # def run_validation(engine):
-    #     # epoch = trainer.state.epoch
-    #     # state = train_evaluator.run(train_loader)
-    #     # log_metrics(logger, epoch, state.times["COMPLETED"], "Train", state.metrics)
     state = evaluator.run(test_loader)
     log_metrics(logger, 00, state.times["COMPLETED"], "Test", state.metrics)
 
-    # trainer.add_event_handler(
-    #     Events.EPOCH_COMPLETED(every=config["validate_every"]) | Events.COMPLETED,
-    #     run_validation,
-    # )
-
-    # if rank == 0:
-    #     # Setup TensorBoard logging on trainer and evaluators. Logged values are:
-    #     #  - Training metrics, e.g. running average loss values
-    #     #  - Learning rate
-    #     #  - Evaluation train/test metrics
-    #     evaluators = {"training": train_evaluator, "test": evaluator}
-    #     tb_logger = common.setup_tb_logging(
-    #         output_path, trainer, optimizer, evaluators=evaluators
-    #     )
-
-    # # Store 2 best models by validation accuracy starting from num_epochs / 2:
-    # # Best model save Handler ONNX
-    # in_channels = 3
-    # best_model_handler_qonnx_export = CheckpointQONNX(
-    #     {
-    #         "model": model,
-    #         "model_suffix": "",  ##can be "_student" here for distillation
-    #         "model_shape": torch.tensor(
-    #             [
-    #                 1,
-    #                 in_channels,
-    #                 config["input_size"][0],
-    #                 config["input_size"][1],
-    #             ]
-    #         ),
-    #     },
-    #     getSaveHandlerQONNX(config),
-    #     filename_prefix="best",
-    #     n_saved=2,
-    #     global_step_transform=global_step_from_engine(trainer),
-    #     score_name="test_F1",
-    #     score_function=lambda _: np.mean(
-    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
-    #     ),
-    # )
-    # evaluator.add_event_handler(
-    #     Events.COMPLETED(every=1),
-    #     best_model_handler_qonnx_export,
-    # )
-
-    # # Best model save Handler
-    # best_model_handler = Checkpoint(
-    #     {"model": model},
-    #     get_save_handler(config),
-    #     filename_prefix="best",
-    #     n_saved=2,
-    #     global_step_transform=global_step_from_engine(trainer),
-    #     score_name="test_F1",
-    #     score_function=lambda _: np.mean(
-    #         np.asarray(Checkpoint.get_default_score_fn("F1", score_sign=1.0)(_))
-    #     ),
-    # )
-    # evaluator.add_event_handler(
-    #     Events.COMPLETED(every=1),
-    #     best_model_handler,
-    # )
-
-    # # In order to check training resuming we can stop training on a given iteration
-    # if config["stop_iteration"] is not None:
-
-    #     @trainer.on(Events.ITERATION_STARTED(once=config["stop_iteration"]))
-    #     def _():
-    #         logger.info(f"Stop training on {trainer.state.iteration} iteration")
-    #         trainer.terminate()
-
-    # try:
-    #     trainer.run(train_loader, max_epochs=config["num_epochs"])
-    # except Exception as e:
-    #     logger.exception("")
-    #     raise e
-
-    # if rank == 0:
-    #     tb_logger.close()
 
 
 def run(
@@ -430,25 +348,16 @@ def create_trainer(
     resume_from = config["resume_from"]
     if resume_from is not None:
         checkpoint_fp = Path(resume_from)
-        assert checkpoint_fp.exists(), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
-        logger.info(f"Resuming from checkpoint: {checkpoint_fp.as_posix()}")
-
-        # Load checkpoint file
+        assert (
+            checkpoint_fp.exists()
+        ), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
+        logger.info(f"Resume from a checkpoint: {checkpoint_fp.as_posix()}")
         checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
+        model.load_state_dict(checkpoint["model"], strict=False)
+        to_save = {"trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler}
+        Checkpoint.load_objects(to_load=to_save, checkpoint=checkpoint)
 
-        # If checkpoint contains "model_state_dict", extract it; otherwise assume it's just weights
-        state_dict = checkpoint["model_state_dict"] if "model_state_dict" in checkpoint else checkpoint
-        missing, unexpected = model.load_state_dict(state_dict, strict=False)
-        if missing or unexpected:
-            logger.warning(f"Missing keys: {missing}, Unexpected keys: {unexpected}")
-
-        # Optional: if you saved optimizer state separately
-        if "optimizer_state_dict" in checkpoint:
-            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-        if "lr_scheduler_state_dict" in checkpoint:
-            lr_scheduler.load_state_dict(checkpoint["lr_scheduler_state_dict"])
-
-    return model
+    return trainer
 
 
 def create_evaluator(model, transform, metrics, config, tag="val"):

@@ -26,6 +26,8 @@ spec:
           unzip MODEL.zip &&
           unzip quantized_loss_landscape &&
           export PYTHONPATH=/root:$PYTHONPATH &&
+          chmod +x test_multi.bash &&
+          ./test_multi.bash &&
           sleep 360000
         volumeMounts:
         - mountPath: /pvc

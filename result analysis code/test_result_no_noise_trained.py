@@ -8,7 +8,7 @@ data_dir = "/Users/chenzhuo/Documents/cloud/result txt/test"
 
 # Parameters
 quans = [2, 4, 6, 8]
-noises = [1, 2, 5]
+noises = [0, 2, 5]
 
 # Regex pattern to extract "Loss: number"
 pattern = re.compile(r"Loss:\s*([0-9.]+)")
@@ -19,7 +19,7 @@ results = np.full((len(noises), len(quans)), np.nan)
 # Collect data
 for i, noise in enumerate(noises):
     for j, quan in enumerate(quans):
-        filename = f"result_test_{quan}_{noise}_sap.txt"
+        filename = f"result_test_{quan}_{noise}_gn.txt"
         if noise == 0:
             filename = f"result_test_{quan}_{noise}.txt"
         filepath = os.path.join(data_dir, filename)
@@ -47,7 +47,7 @@ im = plt.imshow(results, cmap="viridis", aspect="auto",
 plt.xticks(range(len(quans)), quans)
 plt.yticks(range(len(noises)), noises)
 plt.xlabel("Quantization Bit Width")
-plt.ylabel("sap Noise Level")
+plt.ylabel("gn Noise Level")
 plt.title("Loss Heatmap")
 
 # Colorbar
@@ -62,5 +62,5 @@ for i in range(len(noises)):
                      ha="center", va="center", color="w")
 
 plt.tight_layout()
-plt.savefig("/Users/chenzhuo/Documents/cloud/result plot/heatmap loss noisefree trained sap", dpi=300)
+plt.savefig("/Users/chenzhuo/Documents/cloud/result plot/heatmap loss noisefree trained gn new", dpi=300)
 plt.show()
