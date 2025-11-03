@@ -6,7 +6,8 @@ from typing import (
     List,
     Optional,
 )
-
+import sys, os
+sys.path.append("/PyLandscape")
 import fire
 import numpy as np
 import ignite
@@ -30,6 +31,7 @@ from torch.amp import GradScaler
 from utils.quant_utils.save_handler_qonnx import CheckpointQONNX, DiskSaverQONNX
 from utils.loss import TrainingLoss
 from torchvision import tv_tensors
+from PyLandscape.benchmarks.bit_flip import BitFlip
 
 def get_dataflow(config):
     # - Get train/test datasets
@@ -212,6 +214,10 @@ def create_trainer(
 
     return trainer
 
+def make_iterable(value: Any):
+    if isinstance(value, list):
+        return value
+    return [value]
 
 def create_evaluator(model, transform, metrics, config, tag="val"):
     with_amp = config["with_amp"]
@@ -312,33 +318,55 @@ def evaluate_only(local_rank, config):
     # If your get_metrics needs a criterion for loss tracking, reuse your TrainingLoss
     # (will be used only for metrics; model is in eval mode)
     criterion = TrainingLoss(config["class_weights"]).to(device)
-
+    model.criterion = criterion
     class_count = 2
     metrics = get_metrics(class_count=class_count, criterion=criterion)
+    
+    if config['bit_flip']:
+        bit_flip = BitFlip(model, test_loader, device)
+        num_bits = make_iterable([1,5,10,20])
+        strategies = ["fkeras", "random"]
+        for strategy in strategies:
+            perturbed_models = bit_flip.attack(num_bits, strategy)
+            for perturbed_model, n_bits in zip(perturbed_models, num_bits):
+                # evaluate the bit flipped models
+                # ---------- Evaluator ----------
+                evaluator = create_evaluator(perturbed_model, test_transform, metrics=metrics, config=config)
+                print(f"evaluate: {strategy}_bit_flip_{n_bits}")
+                # Optional: simple log hook
+                @evaluator.on(Events.COMPLETED)
+                def _log_final(engine):
+                    logger.info(f"Evaluation completed on {len(test_loader)} batches.")
+                    for k, v in engine.state.metrics.items():
+                        logger.info(f"{k}: {v}")
 
-    # ---------- Evaluator ----------
-    evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
+                # ---------- Run ----------
+                state = evaluator.run(test_loader)
+                log_metrics(logger, 0, state.times["COMPLETED"], "Test", state.metrics)
+    else:
+        # ---------- Evaluator ----------
+        evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
+        # Optional: simple log hook
+        @evaluator.on(Events.COMPLETED)
+        def _log_final(engine):
+            logger.info(f"Evaluation completed on {len(test_loader)} batches.")
+            for k, v in engine.state.metrics.items():
+                logger.info(f"{k}: {v}")
 
-    # Optional: simple log hook
-    @evaluator.on(Events.COMPLETED)
-    def _log_final(engine):
-        logger.info(f"Evaluation completed on {len(test_loader)} batches.")
-        for k, v in engine.state.metrics.items():
-            logger.info(f"{k}: {v}")
-
-    # ---------- Run ----------
-    state = evaluator.run(test_loader)
-    log_metrics(logger, 0, state.times["COMPLETED"], "Test", state.metrics)
+        # ---------- Run ----------
+        state = evaluator.run(test_loader)
+        log_metrics(logger, 0, state.times["COMPLETED"], "Test", state.metrics)
 
 
 # ==== NEW: Fire entrypoint for evaluation only ====
 def run_eval(
     seed: int = 12345,
-    data_path: str = "/data",
+    data_path: str = "/pvc/",
     csv_paths: dict = {
         "train": "/pvc/train.csv",
         "test": "/pvc/valid.csv",
     },
+    bit_flip: bool = False,
     # output_path not strictly needed for eval but kept for consistency/logging
     output_path: str = "./output-alcd-cloud-noisy/",
     input_size=(512, 512),

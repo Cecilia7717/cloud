@@ -69,17 +69,83 @@ def training(local_rank, config):
         mean=config["img_mean"], std=config["img_rescale"]
     )
 
-    # Create trainer for current task
-    trainer = create_trainer(
-        model,
-        train_transform,
-        optimizer,
-        criterion,
-        lr_scheduler,
-        train_loader.sampler,
-        config,
-        logger,
+    with_amp = config["with_amp"]
+    scaler = GradScaler('cuda',enabled=with_amp)
+
+    def train_step(engine, batch):
+        x, y = batch[0], batch[1]
+
+        if x.device != device:
+            x = x.to(device, non_blocking=True)
+            y = y.to(device, non_blocking=True)
+
+        new_images = []
+        new_targets = []
+        for i in range(len(x)):
+            image = tv_tensors.Image(x[i])
+            mask = tv_tensors.Mask(y[i])
+            image, mask = train_transform((image, mask))
+            new_images.append(image)
+            new_targets.append(mask)
+        x, y = torch.stack(new_images), torch.stack(new_targets)
+
+        if x.device != device:
+            x = x.to(device, non_blocking=True)
+            y = y.to(device, non_blocking=True)
+
+        model.train()
+
+        with autocast("cuda", enabled=with_amp):
+            y_pred = model(x)
+
+            loss = criterion(y_pred, y)
+
+        optimizer.zero_grad()
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
+
+        return {
+            "batch loss": loss.item(),
+        }
+
+    trainer = Engine(train_step)
+    trainer.logger = logger
+
+    to_save = {
+        "trainer": trainer,
+        "model": model,
+        "optimizer": optimizer,
+        "lr_scheduler": lr_scheduler,
+    }
+    metric_names = [
+        "batch loss",
+    ]
+
+    common.setup_common_training_handlers(
+        trainer=trainer,
+        train_sampler=train_loader.sampler,
+        to_save=to_save,
+        save_every_iters=config["checkpoint_every"],
+        save_handler=get_save_handler(config),
+        lr_scheduler=lr_scheduler,
+        output_names=metric_names if config["log_every_iters"] > 0 else None,
+        with_pbars=False,
+        clear_cuda_cache=False,
     )
+
+    resume_from = config["resume_from"]
+    if resume_from is not None:
+        checkpoint_fp = Path(resume_from)
+        assert (
+            checkpoint_fp.exists()
+        ), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
+        logger.info(f"Resume from a checkpoint: {checkpoint_fp.as_posix()}")
+        checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
+        model.load_state_dict(checkpoint["model"], strict=False)
+        to_save = {"trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler}
+        Checkpoint.load_objects(to_load=to_save, checkpoint=checkpoint)
+
 
     # Let's now setup evaluator engine to perform model's validation and compute metrics
     class_count = 2
@@ -265,99 +331,6 @@ def log_basic_info(logger, config):
         logger.info(f"\tworld size: {idist.get_world_size()}")
         logger.info("\n")
 
-
-def create_trainer(
-    model, transform, optimizer, criterion, lr_scheduler, train_sampler, config, logger
-):
-    device = idist.device()
-
-    # Setup Ignite trainer:
-    # - let's define training step
-    # - add other common handlers:
-    #    - TerminateOnNan,
-    #    - handler to setup learning rate scheduling,
-    #    - ModelCheckpoint
-    #    - RunningAverage` on `train_step` output
-    #    - Two progress bars on epochs and optionally on iterations
-
-    with_amp = config["with_amp"]
-    scaler = GradScaler('cuda',enabled=with_amp)
-
-    def train_step(engine, batch):
-        x, y = batch[0], batch[1]
-
-        if x.device != device:
-            x = x.to(device, non_blocking=True)
-            y = y.to(device, non_blocking=True)
-
-        new_images = []
-        new_targets = []
-        for i in range(len(x)):
-            image = tv_tensors.Image(x[i])
-            mask = tv_tensors.Mask(y[i])
-            image, mask = transform((image, mask))
-            new_images.append(image)
-            new_targets.append(mask)
-        x, y = torch.stack(new_images), torch.stack(new_targets)
-
-        if x.device != device:
-            x = x.to(device, non_blocking=True)
-            y = y.to(device, non_blocking=True)
-
-        model.train()
-
-        with autocast("cuda", enabled=with_amp):
-            y_pred = model(x)
-
-            loss = criterion(y_pred, y)
-
-        optimizer.zero_grad()
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
-
-        return {
-            "batch loss": loss.item(),
-        }
-
-    trainer = Engine(train_step)
-    trainer.logger = logger
-
-    to_save = {
-        "trainer": trainer,
-        "model": model,
-        "optimizer": optimizer,
-        "lr_scheduler": lr_scheduler,
-    }
-    metric_names = [
-        "batch loss",
-    ]
-
-    common.setup_common_training_handlers(
-        trainer=trainer,
-        train_sampler=train_sampler,
-        to_save=to_save,
-        save_every_iters=config["checkpoint_every"],
-        save_handler=get_save_handler(config),
-        lr_scheduler=lr_scheduler,
-        output_names=metric_names if config["log_every_iters"] > 0 else None,
-        with_pbars=False,
-        clear_cuda_cache=False,
-    )
-
-    resume_from = config["resume_from"]
-    if resume_from is not None:
-        checkpoint_fp = Path(resume_from)
-        assert (
-            checkpoint_fp.exists()
-        ), f"Checkpoint '{checkpoint_fp.as_posix()}' is not found"
-        logger.info(f"Resume from a checkpoint: {checkpoint_fp.as_posix()}")
-        checkpoint = torch.load(checkpoint_fp.as_posix(), map_location="cpu")
-        model.load_state_dict(checkpoint["model"], strict=False)
-        to_save = {"trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler}
-        Checkpoint.load_objects(to_load=to_save, checkpoint=checkpoint)
-
-    return trainer
 
 
 def create_evaluator(model, transform, metrics, config, tag="val"):

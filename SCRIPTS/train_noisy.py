@@ -31,7 +31,7 @@ from utils.quant_utils.save_handler_qonnx import CheckpointQONNX, DiskSaverQONNX
 from utils.loss import TrainingLoss
 from torchvision import tv_tensors
 import os
-from quantized_loss_landscape.workspace.common.benchmarks.noise import Noise
+from PyLandscape.benchmarks.bit_flip import BitFlip
 import pandas as pd
 from SCRIPTS.utils.utils import save_tiff
 def training(local_rank, config):

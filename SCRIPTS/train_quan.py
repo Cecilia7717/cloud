@@ -149,7 +149,7 @@ def training(local_rank, config):
 
     # Best model save Handler
     best_model_handler = Checkpoint(
-        {"model": model, "trainer": trainer, "optimizer": optimizer, "lr_scheduler": lr_scheduler},
+        {"model": model, "lr_scheduler": lr_scheduler},
         get_save_handler(config),
         filename_prefix="best",
         n_saved=2,
