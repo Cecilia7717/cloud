@@ -134,3 +134,11 @@ python /SCRIPTS/test_new.py run \
 python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-6-new-saveall/best_checkpoint_81_test_F1=0.8455.pt" --data_path /pvc/ --csv_paths.train "/pvc/train.csv" --csv_paths.test "/pvc/valid.csv"
 
 python /SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-6-new-saveall/best_checkpoint_81_test_F1=0.8455.pt" --data_path /pvc/  --bit_flip True --seed 23456
+
+
+python /SCRIPTS/test_normal.py eval \
+     --model ags_tiny_unet_50k \
+     --resume_from "/pvc/output-alcd-cloud-6-new-saveall/best_checkpoint_81_test_F1=0.8455.pt" \
+     --data_path /pvc/  \
+     --bit_flip True \
+     --seed 23456
