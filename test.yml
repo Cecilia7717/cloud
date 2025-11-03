@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: test
+  name: test-1
 spec:
   ttlSecondsAfterFinished: 0
   template:
