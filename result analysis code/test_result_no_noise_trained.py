@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Directory containing result files
-data_dir = "/Users/chenzhuo/Documents/cloud/result txt/test"
+data_dir = "/Users/cc/Documents/cloud/result txt/test"
 
 # Parameters
 quans = [2, 4, 6, 8]
@@ -19,9 +19,9 @@ results = np.full((len(noises), len(quans)), np.nan)
 # Collect data
 for i, noise in enumerate(noises):
     for j, quan in enumerate(quans):
-        filename = f"result_test_{quan}_{noise}_gn.txt"
+        filename = f"result_quan_{quan}_{noise}_sap.txt"
         if noise == 0:
-            filename = f"result_test_{quan}_{noise}.txt"
+            filename = f"result_quan_{quan}_{noise}.txt"
         filepath = os.path.join(data_dir, filename)
 
         if not os.path.exists(filepath):
@@ -58,9 +58,9 @@ cbar.set_label("Loss")
 for i in range(len(noises)):
     for j in range(len(quans)):
         if not np.isnan(results[i, j]):
-            plt.text(j, i, f"{results[i, j]:.7f}",
+            plt.text(j, i, f"{results[i, j]:.9f}",
                      ha="center", va="center", color="w")
 
 plt.tight_layout()
-plt.savefig("/Users/chenzhuo/Documents/cloud/result plot/heatmap loss noisefree trained gn new", dpi=300)
+# plt.savefig("/Users/chenzhuo/Documents/cloud/result plot/heatmap loss noisefree trained gn new", dpi=300)
 plt.show()
