@@ -35,13 +35,13 @@ spec:
           name: dshm
         resources:
           limits:
-            cpu: 4
-            memory: 32Gi
+            cpu: 8
+            memory: 64Gi
             nvidia.com/gpu: "1"
             ephemeral-storage: 624Gi
           requests:
-            cpu: 4
-            memory: 32Gi
+            cpu: 8
+            memory: 64Gi
             nvidia.com/gpu: "1"
             ephemeral-storage: 624Gi
         securityContext:

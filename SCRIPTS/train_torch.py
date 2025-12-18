@@ -205,7 +205,7 @@ def main() -> None:
         mean=[0.0, 0.0, 0.0], std=[8657.0, 8657.0, 8657.0]
     )
 
-    # -------------------------- data loaders (CPU collate) --------------------------
+    # -------------------------- data loaders --------------------------
     train_loader = DataLoader(
         train_dataset,
         batch_size=args.batch_size,
