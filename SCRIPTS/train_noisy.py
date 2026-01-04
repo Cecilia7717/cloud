@@ -32,6 +32,7 @@ from utils.loss import TrainingLoss
 from torchvision import tv_tensors
 import os
 from PyLandscape.benchmarks.bit_flip import BitFlip
+from PyLandscape.benchmarks.noise import Noise
 import pandas as pd
 from SCRIPTS.utils.utils import save_tiff
 def training(local_rank, config):
@@ -67,7 +68,7 @@ def training(local_rank, config):
   
 def run(
     seed: int = 23456,
-    noise_adder: Noise=Noise.add_salt_and_pepper_noise,
+    noise_adder: Noise=Noise.add_gaussian_noise,
     noise_module: float=2.0, # percentage
     data_path: str = "/data",
     csv_paths: dict = {
@@ -226,10 +227,10 @@ def get_dataflow(config):
         train_dataset, test_dataset = get_train_test_datasets(
             config["data_path"], 
             csv_paths=config["csv_paths"])
-    noisy_images_dir = "./train_noisy"
-    noisy_images_csv = "./train_noisy.csv"
-    noisy_images_dir_test = "./test_noisy"
-    noisy_images_csv_test = "./test_noisy.csv"
+    noisy_images_dir = "./train_noisy_5"
+    noisy_images_csv = "./train_noisy_5.csv"
+    noisy_images_dir_test = "./test_noisy_5"
+    noisy_images_csv_test = "./test_noisy_5.csv"
 
     save_noisy_dataset(
         train_dataset,
