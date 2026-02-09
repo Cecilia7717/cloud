@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pod-8
+  name: pod-test-1
 spec:
   restartPolicy: Never
 
@@ -11,7 +11,6 @@ spec:
     command: ["/bin/sh", "-c"]
     args:
     - >
-      set -e &&
       wget -O MODEL.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1yBy3_4j8PTEnAl5uSSv5HOwzvb4nsugf' &&
       wget -O SCRIPTS.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=1nd8FPBGqtIfOI9Cje4-US45pPfKAyWMr' &&
       pip install gdown &&
@@ -24,11 +23,10 @@ spec:
       unzip MODEL.zip &&
       unzip quantized_loss_landscape &&
       gdown 'https://drive.google.com/uc?id=1-utul7btK0Mtx2iMglJWGfGjSzYf7qGk' -O PyLandscape.zip && 
+      unzip PyLandscape.zip &&
       export PYTHONPATH=/:/PyLandscape &&
-      python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 8 --data_path /pvc >> 8_23456.txt 2>&1 &&
-      cp 8_23456.txt /pvc/8_23456.txt &&
-      mv output-alcd-cloud-noisy -r /pvc/output-alcd-cloud-8 &&
-      echo "Setup complete. Pod is now idle." &&
+      python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" --data_path /pvc/ --csv_paths.train "/pvc/train.csv" --csv_paths.test "/pvc/valid.csv"  >> test.txt 2>&1 &&
+      cp test.txt /pvc/test_2_0.txt &&
       sleep infinity
 
     volumeMounts:
@@ -40,11 +38,11 @@ spec:
     resources:
       limits:
         cpu: "8"
-        memory: 32Gi
+        memory: 16Gi
         nvidia.com/gpu: "1"
       requests:
         cpu: "8"
-        memory: 32Gi
+        memory: 16Gi
         nvidia.com/gpu: "1"
 
     securityContext:

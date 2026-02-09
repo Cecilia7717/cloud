@@ -135,10 +135,77 @@ python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc
 
 python /SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-6-new-saveall/best_checkpoint_81_test_F1=0.8455.pt" --data_path /pvc/  --bit_flip True --seed 23456
 
+python SCRIPTS/test_normal.py eval \
+     --model ags_tiny_unet_50k \
+     --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" \
+     --data_path /pvc/ \
+     --csv_paths.train "/pvc/train.csv" \
+     --csv_paths.test "/pvc/valid.csv"
+
 
 python /SCRIPTS/test_normal.py eval \
      --model ags_tiny_unet_50k \
-     --resume_from "/pvc/output-alcd-cloud-6-new-saveall/best_checkpoint_81_test_F1=0.8455.pt" \
+     --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" \
      --data_path /pvc/  \
      --bit_flip True \
      --seed 23456
+(base) root@pod-8:/pvc# ls output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/
+'best_checkpoint_57_test_F1=0.8221.onnx'  'best_checkpoint_60_test_F1=0.8238.onnx'   events.out.tfevents.1767560046.pod
+'best_checkpoint_57_test_F1=0.8221.pt'    'best_checkpoint_60_test_F1=0.8238.pt'     training_checkpoint_31000.pt
+(base) root@pod-8:/pvc# ls output-alcd-cloud-4/ags_tiny_unet_50k_backend-None-1_20260105-020322/
+'best_checkpoint_63_test_F1=0.8428.onnx'  'best_checkpoint_81_test_F1=0.8437.onnx'   events.out.tfevents.1767578603.pod-4-1
+'best_checkpoint_63_test_F1=0.8428.pt'    'best_checkpoint_81_test_F1=0.8437.pt'     training_checkpoint_31000.pt
+(base) root@pod-8:/pvc# ls output-alcd-cloud-6/ags_tiny_unet_50k_backend-None-1_20260105-020647/
+'best_checkpoint_63_test_F1=0.8467.onnx'  'best_checkpoint_90_test_F1=0.8482.onnx'   events.out.tfevents.1767578807.pod-6-1
+'best_checkpoint_63_test_F1=0.8467.pt'    'best_checkpoint_90_test_F1=0.8482.pt'     training_checkpoint_31000.pt
+
+add noise to the datasets
+
+      export PYTHONPATH=/:/PyLandscape &&
+      python /SCRIPTS/train_quan.py run --model ags_tiny_unet_50k --seed 23456 --quant_config 8 --data_path /pvc >> 8_23456.txt 2>&1 &&
+      cp 8_23456.txt /pvc/8_23456.txt &&
+      mv output-alcd-cloud-noisy /pvc/output-alcd-cloud-8 &&
+
+test_normal
+      python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" --data_path /pvc/ --csv_paths.train "/pvc/train.csv" --csv_paths.test "/pvc/valid.csv"  >> test.txt 2>&1 &&
+      cp test.txt /pvc/test_2_0.txt &&
+
+
+
+
+2026-02-08 19:05:10,341 ALCD_CLOUD_EVAL INFO: Evaluation completed on 40 batches.
+2026-02-08 19:05:10,343 ALCD_CLOUD_EVAL INFO: Precision: tensor([0.9579, 0.3819], dtype=torch.float64)
+2026-02-08 19:05:10,343 ALCD_CLOUD_EVAL INFO: Recall: tensor([0.5436, 0.9219], dtype=torch.float64)
+2026-02-08 19:05:10,343 ALCD_CLOUD_EVAL INFO: F1: tensor([0.6936, 0.5401], dtype=torch.float64)
+2026-02-08 19:05:10,343 ALCD_CLOUD_EVAL INFO: Loss: 0.5931839971224612
+2026-02-08 19:05:10,344 ALCD_CLOUD_EVAL INFO: Epoch[0] - Evaluation time (seconds): 41.498
+ - Test metrics:
+        Precision: tensor([0.9579, 0.3819], dtype=torch.float64)
+        Recall: tensor([0.5436, 0.9219], dtype=torch.float64)
+        F1: tensor([0.6936, 0.5401], dtype=torch.float64)
+        Loss: 0.5931839971224612
+2026-02-08 19:05:10,345 ignite.distributed.launcher.Parallel INFO: End of run
+bash: --nproc_per_node: command not found
+(base) root@pod-test-1:/# python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" --data_path /pvc/ --csv_paths.train "/pvc/train.csv" --csv_paths.test "/pvc/valid.csv" --num_workers 0 --backend None --nproc_per)node
+bash: syntax error near unexpected token `)'
+(base) root@pod-test-1:/# python SCRIPTS/test_normal.py eval --model ags_tiny_unet_50k --resume_from "/pvc/output-alcd-cloud-2/ags_tiny_unet_50k_backend-None-1_20260104-205406/best_checkpoint_60_test_F1=0.8238.pt" --data_path /pvc/ --csv_paths.train "/pvc/train.csv" --csv_paths.test "/pvc/valid.csv" --num_workers 0 --backend None --nproc_per_node
+/opt/conda/lib/python3.12/site-packages/ignite/handlers/checkpoint.py:16: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import ZeroRedundancyOptimizer
+Traceback (most recent call last):
+  File "//SCRIPTS/test_normal.py", line 408, in <module>
+    fire.Fire({"eval": run_eval})
+  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 135, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 468, in _Fire
+    component, remaining_args = _CallAndUpdateTrace(
+                                ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/fire/core.py", line 684, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "//SCRIPTS/test_normal.py", line 404, in run_eval
+    with idist.Parallel(backend=backend, **spawn_kwargs) as parallel:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/ignite/distributed/launcher.py", line 231, in __init__
+    raise ValueError(f"If backend is None, argument '{name}' should be also None, but given {value}")
+ValueError: If backend is None, argument 'nproc_per_node' should be also None, but given True

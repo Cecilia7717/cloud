@@ -1,0 +1,59 @@
+1839-2026-01-04 23:45:18,084 ALCD_CLOUD INFO: Epoch[57] - Evaluation time (seconds): 74.124
+1840- - Train metrics:
+1841-   Precision: tensor([0.9262, 0.7033], dtype=torch.float64)
+1842-   Recall: tensor([0.9126, 0.7401], dtype=torch.float64)
+1843-   F1: tensor([0.9194, 0.7212], dtype=torch.float64)
+1844-   Loss: 0.46261222000156893
+1845-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1846-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1847-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1848-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1849-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1850-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1851-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1852-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1853-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1854-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1855-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1856-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1857-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1858-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1859-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1860-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1861-2026-01-04 23:45:39,298 ALCD_CLOUD INFO: Epoch[57] - Evaluation time (seconds): 21.141
+1862- - Test metrics:
+1863-   Precision: tensor([0.9177, 0.7241], dtype=torch.float64)
+1864-   Recall: tensor([0.9147, 0.7320], dtype=torch.float64)
+1865-   F1: tensor([0.9162, 0.7280], dtype=torch.float64)
+1866-   Loss: 0.4741966425148334
+1867-2026-01-04 23:45:39,299 ALCD_CLOUD INFO: Epoch[57] Complete. Time taken: 00:03:34.183
+
+
+1936:2026-01-04 23:52:50,737 ALCD_CLOUD INFO: Epoch[60] - Evaluation time (seconds): 73.611
+1937- - Train metrics:
+1938-   Precision: tensor([0.9179, 0.7378], dtype=torch.float64)
+1939-   Recall: tensor([0.9301, 0.7028], dtype=torch.float64)
+1940-   F1: tensor([0.9240, 0.7199], dtype=torch.float64)
+1941-   Loss: 0.46525985320808133
+1942-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1943-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1944-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1945-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1946-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1947-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1948-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1949-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1950-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1951-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1952-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1953-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1954-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1955-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1956-/opt/conda/lib/python3.12/site-packages/rasterio/__init__.py:356: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+1957-  dataset = DatasetReader(path, driver=driver, sharing=sharing, **kwargs)
+1958:2026-01-04 23:53:11,583 ALCD_CLOUD INFO: Epoch[60] - Evaluation time (seconds): 20.788
+1959- - Test metrics:
+1960-   Precision: tensor([0.9090, 0.7615], dtype=torch.float64)
+1961-   Recall: tensor([0.9334, 0.6947], dtype=torch.float64)
+1962-   F1: tensor([0.9211, 0.7266], dtype=torch.float64)
+1963-   Loss: 0.4697234982064411
