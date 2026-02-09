@@ -126,14 +126,7 @@ def create_trainer(
 ):
     device = idist.device()
 
-    # Setup Ignite trainer:
-    # - let's define training step
-    # - add other common handlers:
-    #    - TerminateOnNan,
-    #    - handler to setup learning rate scheduling,
-    #    - ModelCheckpoint
-    #    - RunningAverage` on `train_step` output
-    #    - Two progress bars on epochs and optionally on iterations
+    # Setup Ignite trainer
 
     with_amp = config["with_amp"]
     scaler = GradScaler('cuda',enabled=with_amp)
@@ -265,24 +258,23 @@ def get_save_handler(config):
 def getSaveHandlerQONNX(config: Dict[str, Any]):
     return DiskSaverQONNX(config["output_path"], require_empty=False)
 
-# ==== NEW: helper to robustly load model weights from various checkpoint formats ====
 def load_model_from_checkpoint(model, ckpt_path, logger=None):
     ckpt = torch.load(ckpt_path, map_location="cpu")
 
-    # Case 1: Ignite-style
+    # Case 1: Ignite-style - should be this one
     if isinstance(ckpt, dict) and "model" in ckpt:
         state_dict = ckpt["model"]
         model.load_state_dict(state_dict, strict=False)
         if logger:
             logger.info(f"Loaded Ignite checkpoint from {ckpt_path}")
 
-    # Case 2: Standard PyTorch checkpoint
+    # Case 2: PyTorch checkpoint
     elif isinstance(ckpt, dict) and "model_state_dict" in ckpt:
         model.load_state_dict(ckpt["model_state_dict"], strict=False)
         if logger:
             logger.info(f"Loaded PyTorch checkpoint from {ckpt_path}")
 
-    # Case 3: Raw state_dict (your second one)
+    # Case 3: Raw state_dict 
     elif all(isinstance(k, str) for k in ckpt.keys()):
         model.load_state_dict(ckpt, strict=False)
         if logger:
@@ -314,13 +306,12 @@ def evaluate_only(local_rank, config):
         raise ValueError("run_eval requires --resume_from to point to a checkpoint file")
     load_model_from_checkpoint(model, config["resume_from"], logger)
 
-    # get transforms & metrics (your get_metrics expects a criterion; for eval we can pass a no-op or reuse TrainingLoss)
+    # get transforms & metrics
     train_transform, test_transform = get_transform(
         mean=config["img_mean"], std=config["img_rescale"]
     )
 
-    # If your get_metrics needs a criterion for loss tracking, reuse your TrainingLoss
-    # (will be used only for metrics; model is in eval mode)
+    # reuse TrainingLoss
     criterion = TrainingLoss(config["class_weights"]).to(device)
     model.criterion = criterion
     class_count = 2
@@ -350,7 +341,6 @@ def evaluate_only(local_rank, config):
     else:
         # ---------- Evaluator ----------
         evaluator = create_evaluator(model, test_transform, metrics=metrics, config=config)
-        # Optional: simple log hook
         @evaluator.on(Events.COMPLETED)
         def _log_final(engine):
             logger.info(f"Evaluation completed on {len(test_loader)} batches.")
